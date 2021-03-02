@@ -1,0 +1,136 @@
+ASxxxx Linker V03.00 + NoICE + sdld,  page 1.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+.  .ABS.                            00000000    00000000 =           0. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     FFFFFFFF  s_SSEG                          
+     00000000  .__.ABS.                           _strlen
+     00000000  l_CABS                          
+     00000000  l_DABS                          
+     00000000  l_DATA                          
+     00000000  l_INITIALIZED                   
+     00000000  l_INITIALIZER                   
+     00000000  l__CODE                         
+     00000000  s_CABS                          
+     00000000  s_DABS                          
+     00000000  s__CODE                         
+     00000001  l_SSEG                          
+     00000001  s_DATA                          
+     00000001  s_INITIALIZED                   
+     00000003  l_GSFINAL                       
+     00000007  l_HOME                          
+     0000000F  l_CONST                         
+     0000001A  l_GSINIT                        
+     00000255  l_CODE                          
+     00008000  s_HOME                          
+     00008007  s_GSINIT                        
+     00008021  s_GSFINAL                       
+     00008024  s_CONST                         
+     00008033  s_CODE                          
+     00008033  s_INITIALIZER                   
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 2.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+SSEG                                FFFFFFFF    00000001 =           1. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00 + NoICE + sdld,  page 3.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+HOME                                00008000    00000007 =           7. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00 + NoICE + sdld,  page 4.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+GSINIT                              00008007    0000001A =          26. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00 + NoICE + sdld,  page 5.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+GSFINAL                             00008021    00000003 =           3. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00 + NoICE + sdld,  page 6.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CONST                               00008024    0000000F =          15. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00 + NoICE + sdld,  page 7.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+CODE                                00008033    00000255 =         597. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00008033  _main                              main
+     0000808C  _spi_init                          main
+     0000808D  _uart_init                         main
+     000080A2  _gpio_init                         main
+     000080A3  _uart_write                        main
+     000080D4  _flash_write_to_addr               flash_driver
+     000080F0  _flash_read_from_addr              flash_driver
+     0000810C  _flash_set_write_addr              flash_driver
+     0000811E  _flash_set_read_addr               flash_driver
+     00008130  _flash_write_nbytes                flash_driver
+     00008150  _flash_read_nbytes                 flash_driver
+     0000817A  _flash_read_sreg                   flash_driver
+     0000819A  _flash_write_sreg                  flash_driver
+     000081AF  _flash_busy_wait                   flash_driver
+     000081BA  _flash_erase_block                 flash_driver
+     000081CD  _flash_write_enable                flash_driver
+     000081D4  _flash_erase_chip                  flash_driver
+     000081DB  _flash_spi_config                  spi
+     00008208  _flash_gpio_config                 spi
+     00008225  _spi_busy_wait                     spi
+     0000822B  _spi_write_24bits                  spi
+     00008257  _spi_write_8bits                   spi
+     00008264  _spi_read_8bits                    spi
+     00008279  _strlen                            _strlen
+ASxxxx Linker V03.00 + NoICE + sdld,  page 8.
+
+Files Linked                              [ module(s) ]
+
+build/main.rel                            [ main ]
+build/flash_driver.rel                    [ flash_driver ]
+build/spi.rel                             [ spi ]
+
+
+Libraries Linked                          [ object file ]
+
+/usr/local/bin/../share/sdcc/lib/stm8/stm8.lib
+                                          [ _strlen.rel ]
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 9.
+
+User Base Address Definitions
+
+HOME = 0x8000
+DATA = 0x0001
+SSEG = 0xffffffff
+
+

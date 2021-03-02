@@ -1,0 +1,334 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ANSI-C Compiler
+                                      3 ; Version 4.0.0 #11528 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module flash_driver
+                                      6 	.optsdcc -mstm8
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _spi_read_8bits
+                                     12 	.globl _spi_write_8bits
+                                     13 	.globl _spi_write_24bits
+                                     14 	.globl _flash_write_to_addr
+                                     15 	.globl _flash_read_from_addr
+                                     16 	.globl _flash_set_write_addr
+                                     17 	.globl _flash_set_read_addr
+                                     18 	.globl _flash_write_nbytes
+                                     19 	.globl _flash_read_nbytes
+                                     20 	.globl _flash_read_sreg
+                                     21 	.globl _flash_write_sreg
+                                     22 	.globl _flash_busy_wait
+                                     23 	.globl _flash_erase_block
+                                     24 	.globl _flash_write_enable
+                                     25 	.globl _flash_erase_chip
+                                     26 ;--------------------------------------------------------
+                                     27 ; ram data
+                                     28 ;--------------------------------------------------------
+                                     29 	.area DATA
+                                     30 ;--------------------------------------------------------
+                                     31 ; ram data
+                                     32 ;--------------------------------------------------------
+                                     33 	.area INITIALIZED
+                                     34 ;--------------------------------------------------------
+                                     35 ; absolute external ram data
+                                     36 ;--------------------------------------------------------
+                                     37 	.area DABS (ABS)
+                                     38 
+                                     39 ; default segment ordering for linker
+                                     40 	.area HOME
+                                     41 	.area GSINIT
+                                     42 	.area GSFINAL
+                                     43 	.area CONST
+                                     44 	.area INITIALIZER
+                                     45 	.area CODE
+                                     46 
+                                     47 ;--------------------------------------------------------
+                                     48 ; global & static initialisations
+                                     49 ;--------------------------------------------------------
+                                     50 	.area HOME
+                                     51 	.area GSINIT
+                                     52 	.area GSFINAL
+                                     53 	.area GSINIT
+                                     54 ;--------------------------------------------------------
+                                     55 ; Home
+                                     56 ;--------------------------------------------------------
+                                     57 	.area HOME
+                                     58 	.area HOME
+                                     59 ;--------------------------------------------------------
+                                     60 ; code
+                                     61 ;--------------------------------------------------------
+                                     62 	.area CODE
+                                     63 ;	src/flash_driver.c: 13: void flash_write_to_addr(uint32_t addr, uint8_t *buff, uint16_t nbytes)
+                                     64 ;	-----------------------------------------
+                                     65 ;	 function flash_write_to_addr
+                                     66 ;	-----------------------------------------
+      000000                         67 _flash_write_to_addr:
+                                     68 ;	src/flash_driver.c: 15: if (buff == NULL)
+      000000 1E 07            [ 2]   69 	ldw	x, (0x07, sp)
+      000002 26 01            [ 1]   70 	jrne	00102$
+                                     71 ;	src/flash_driver.c: 16: return;
+      000004 81               [ 4]   72 	ret
+      000005                         73 00102$:
+                                     74 ;	src/flash_driver.c: 17: flash_set_write_addr(addr);
+      000005 1E 05            [ 2]   75 	ldw	x, (0x05, sp)
+      000007 89               [ 2]   76 	pushw	x
+      000008 1E 05            [ 2]   77 	ldw	x, (0x05, sp)
+      00000A 89               [ 2]   78 	pushw	x
+      00000B CDr00r38         [ 4]   79 	call	_flash_set_write_addr
+      00000E 5B 04            [ 2]   80 	addw	sp, #4
+                                     81 ;	src/flash_driver.c: 18: flash_write_nbytes(buff, nbytes);
+      000010 1E 09            [ 2]   82 	ldw	x, (0x09, sp)
+      000012 89               [ 2]   83 	pushw	x
+      000013 1E 09            [ 2]   84 	ldw	x, (0x09, sp)
+      000015 89               [ 2]   85 	pushw	x
+      000016 CDr00r5C         [ 4]   86 	call	_flash_write_nbytes
+      000019 5B 04            [ 2]   87 	addw	sp, #4
+                                     88 ;	src/flash_driver.c: 19: }
+      00001B 81               [ 4]   89 	ret
+                                     90 ;	src/flash_driver.c: 28: void flash_read_from_addr(uint32_t addr, uint8_t *buff, uint16_t nbytes)
+                                     91 ;	-----------------------------------------
+                                     92 ;	 function flash_read_from_addr
+                                     93 ;	-----------------------------------------
+      00001C                         94 _flash_read_from_addr:
+                                     95 ;	src/flash_driver.c: 30: if (buff == NULL)
+      00001C 1E 07            [ 2]   96 	ldw	x, (0x07, sp)
+      00001E 26 01            [ 1]   97 	jrne	00102$
+                                     98 ;	src/flash_driver.c: 31: return;
+      000020 81               [ 4]   99 	ret
+      000021                        100 00102$:
+                                    101 ;	src/flash_driver.c: 32: flash_set_read_addr(addr);
+      000021 1E 05            [ 2]  102 	ldw	x, (0x05, sp)
+      000023 89               [ 2]  103 	pushw	x
+      000024 1E 05            [ 2]  104 	ldw	x, (0x05, sp)
+      000026 89               [ 2]  105 	pushw	x
+      000027 CDr00r4A         [ 4]  106 	call	_flash_set_read_addr
+      00002A 5B 04            [ 2]  107 	addw	sp, #4
+                                    108 ;	src/flash_driver.c: 33: flash_read_nbytes(buff, nbytes);
+      00002C 1E 09            [ 2]  109 	ldw	x, (0x09, sp)
+      00002E 89               [ 2]  110 	pushw	x
+      00002F 1E 09            [ 2]  111 	ldw	x, (0x09, sp)
+      000031 89               [ 2]  112 	pushw	x
+      000032 CDr00r7C         [ 4]  113 	call	_flash_read_nbytes
+      000035 5B 04            [ 2]  114 	addw	sp, #4
+                                    115 ;	src/flash_driver.c: 34: }
+      000037 81               [ 4]  116 	ret
+                                    117 ;	src/flash_driver.c: 41: void flash_set_write_addr(uint32_t addr)
+                                    118 ;	-----------------------------------------
+                                    119 ;	 function flash_set_write_addr
+                                    120 ;	-----------------------------------------
+      000038                        121 _flash_set_write_addr:
+                                    122 ;	src/flash_driver.c: 43: spi_write_8bits(CMD_PAGE_WRITE);
+      000038 4B 02            [ 1]  123 	push	#0x02
+      00003A CDr00r00         [ 4]  124 	call	_spi_write_8bits
+      00003D 84               [ 1]  125 	pop	a
+                                    126 ;	src/flash_driver.c: 44: spi_write_24bits(addr);
+      00003E 1E 05            [ 2]  127 	ldw	x, (0x05, sp)
+      000040 89               [ 2]  128 	pushw	x
+      000041 1E 05            [ 2]  129 	ldw	x, (0x05, sp)
+      000043 89               [ 2]  130 	pushw	x
+      000044 CDr00r00         [ 4]  131 	call	_spi_write_24bits
+      000047 5B 04            [ 2]  132 	addw	sp, #4
+                                    133 ;	src/flash_driver.c: 45: }
+      000049 81               [ 4]  134 	ret
+                                    135 ;	src/flash_driver.c: 52: void flash_set_read_addr(uint32_t addr)
+                                    136 ;	-----------------------------------------
+                                    137 ;	 function flash_set_read_addr
+                                    138 ;	-----------------------------------------
+      00004A                        139 _flash_set_read_addr:
+                                    140 ;	src/flash_driver.c: 54: spi_write_8bits(CMD_READ_ARRAY);
+      00004A 4B 03            [ 1]  141 	push	#0x03
+      00004C CDr00r00         [ 4]  142 	call	_spi_write_8bits
+      00004F 84               [ 1]  143 	pop	a
+                                    144 ;	src/flash_driver.c: 55: spi_write_24bits(addr);
+      000050 1E 05            [ 2]  145 	ldw	x, (0x05, sp)
+      000052 89               [ 2]  146 	pushw	x
+      000053 1E 05            [ 2]  147 	ldw	x, (0x05, sp)
+      000055 89               [ 2]  148 	pushw	x
+      000056 CDr00r00         [ 4]  149 	call	_spi_write_24bits
+      000059 5B 04            [ 2]  150 	addw	sp, #4
+                                    151 ;	src/flash_driver.c: 56: }
+      00005B 81               [ 4]  152 	ret
+                                    153 ;	src/flash_driver.c: 67: void flash_write_nbytes(uint8_t *buff, uint16_t nbytes)
+                                    154 ;	-----------------------------------------
+                                    155 ;	 function flash_write_nbytes
+                                    156 ;	-----------------------------------------
+      00005C                        157 _flash_write_nbytes:
+                                    158 ;	src/flash_driver.c: 69: if (buff == NULL)
+      00005C 1E 03            [ 2]  159 	ldw	x, (0x03, sp)
+      00005E 26 01            [ 1]  160 	jrne	00118$
+                                    161 ;	src/flash_driver.c: 70: return;
+      000060 81               [ 4]  162 	ret
+                                    163 ;	src/flash_driver.c: 72: while (i < nbytes)
+      000061                        164 00118$:
+      000061 5F               [ 1]  165 	clrw	x
+      000062                        166 00109$:
+      000062 13 05            [ 2]  167 	cpw	x, (0x05, sp)
+      000064 25 01            [ 1]  168 	jrc	00141$
+      000066 81               [ 4]  169 	ret
+      000067                        170 00141$:
+                                    171 ;	src/flash_driver.c: 74: SPI_WRITE8(buff[i]);    // since fast operation is required, directly calling the macro here
+      000067 90 93            [ 1]  172 	ldw	y, x
+      000069 72 F9 03         [ 2]  173 	addw	y, (0x03, sp)
+      00006C 90 F6            [ 1]  174 	ld	a, (y)
+      00006E C7 52 04         [ 1]  175 	ld	0x5204, a
+      000071                        176 00103$:
+      000071 C6 52 03         [ 1]  177 	ld	a, 0x5203
+      000074 A5 02            [ 1]  178 	bcp	a, #0x02
+      000076 27 F9            [ 1]  179 	jreq	00103$
+                                    180 ;	src/flash_driver.c: 75: i++;
+      000078 5C               [ 1]  181 	incw	x
+      000079 20 E7            [ 2]  182 	jra	00109$
+                                    183 ;	src/flash_driver.c: 77: }
+      00007B 81               [ 4]  184 	ret
+                                    185 ;	src/flash_driver.c: 88: void flash_read_nbytes(uint8_t *buff, uint16_t nbytes)
+                                    186 ;	-----------------------------------------
+                                    187 ;	 function flash_read_nbytes
+                                    188 ;	-----------------------------------------
+      00007C                        189 _flash_read_nbytes:
+                                    190 ;	src/flash_driver.c: 90: if (buff == NULL)
+      00007C 1E 03            [ 2]  191 	ldw	x, (0x03, sp)
+      00007E 26 01            [ 1]  192 	jrne	00125$
+                                    193 ;	src/flash_driver.c: 91: return;
+      000080 81               [ 4]  194 	ret
+                                    195 ;	src/flash_driver.c: 93: while (i < nbytes)
+      000081                        196 00125$:
+      000081 5F               [ 1]  197 	clrw	x
+      000082                        198 00115$:
+      000082 13 05            [ 2]  199 	cpw	x, (0x05, sp)
+      000084 25 01            [ 1]  200 	jrc	00152$
+      000086 81               [ 4]  201 	ret
+      000087                        202 00152$:
+                                    203 ;	src/flash_driver.c: 95: SPI_READ8(buff[i]); // since fast operation is required, directly calling the macro here
+      000087 35 FF 52 04      [ 1]  204 	mov	0x5204+0, #0xff
+      00008B                        205 00103$:
+      00008B C6 52 03         [ 1]  206 	ld	a, 0x5203
+      00008E A5 02            [ 1]  207 	bcp	a, #0x02
+      000090 27 F9            [ 1]  208 	jreq	00103$
+      000092                        209 00109$:
+      000092 C6 52 03         [ 1]  210 	ld	a, 0x5203
+      000095 44               [ 1]  211 	srl	a
+      000096 24 FA            [ 1]  212 	jrnc	00109$
+      000098 90 93            [ 1]  213 	ldw	y, x
+      00009A 72 F9 03         [ 2]  214 	addw	y, (0x03, sp)
+      00009D C6 52 04         [ 1]  215 	ld	a, 0x5204
+      0000A0 90 F7            [ 1]  216 	ld	(y), a
+                                    217 ;	src/flash_driver.c: 96: i++;
+      0000A2 5C               [ 1]  218 	incw	x
+      0000A3 20 DD            [ 2]  219 	jra	00115$
+                                    220 ;	src/flash_driver.c: 98: }
+      0000A5 81               [ 4]  221 	ret
+                                    222 ;	src/flash_driver.c: 106: uint8_t flash_read_sreg(uint8_t sreg_no)
+                                    223 ;	-----------------------------------------
+                                    224 ;	 function flash_read_sreg
+                                    225 ;	-----------------------------------------
+      0000A6                        226 _flash_read_sreg:
+                                    227 ;	src/flash_driver.c: 109: if (sreg_no == 1)
+      0000A6 7B 03            [ 1]  228 	ld	a, (0x03, sp)
+      0000A8 4A               [ 1]  229 	dec	a
+      0000A9 26 08            [ 1]  230 	jrne	00105$
+                                    231 ;	src/flash_driver.c: 110: spi_write_8bits(CMD_READ_SREG_BYTE1);
+      0000AB 4B 05            [ 1]  232 	push	#0x05
+      0000AD CDr00r00         [ 4]  233 	call	_spi_write_8bits
+      0000B0 84               [ 1]  234 	pop	a
+      0000B1 20 10            [ 2]  235 	jra	00106$
+      0000B3                        236 00105$:
+                                    237 ;	src/flash_driver.c: 111: else if (sreg_no == 2)
+      0000B3 7B 03            [ 1]  238 	ld	a, (0x03, sp)
+      0000B5 A1 02            [ 1]  239 	cp	a, #0x02
+      0000B7 26 08            [ 1]  240 	jrne	00102$
+                                    241 ;	src/flash_driver.c: 112: spi_write_8bits(CMD_READ_SREG_BYTE2);
+      0000B9 4B 35            [ 1]  242 	push	#0x35
+      0000BB CDr00r00         [ 4]  243 	call	_spi_write_8bits
+      0000BE 84               [ 1]  244 	pop	a
+      0000BF 20 02            [ 2]  245 	jra	00106$
+      0000C1                        246 00102$:
+                                    247 ;	src/flash_driver.c: 114: return 0;
+      0000C1 4F               [ 1]  248 	clr	a
+      0000C2 81               [ 4]  249 	ret
+      0000C3                        250 00106$:
+                                    251 ;	src/flash_driver.c: 116: sreg_val = spi_read_8bits();
+                                    252 ;	src/flash_driver.c: 118: return sreg_val;
+                                    253 ;	src/flash_driver.c: 119: }
+      0000C3 CCr00r00         [ 2]  254 	jp	_spi_read_8bits
+                                    255 ;	src/flash_driver.c: 127: void flash_write_sreg(uint8_t sreg_byte1, uint8_t sreg_byte2)
+                                    256 ;	-----------------------------------------
+                                    257 ;	 function flash_write_sreg
+                                    258 ;	-----------------------------------------
+      0000C6                        259 _flash_write_sreg:
+                                    260 ;	src/flash_driver.c: 129: spi_write_8bits(CMD_WRITE_SREG);
+      0000C6 4B 01            [ 1]  261 	push	#0x01
+      0000C8 CDr00r00         [ 4]  262 	call	_spi_write_8bits
+      0000CB 84               [ 1]  263 	pop	a
+                                    264 ;	src/flash_driver.c: 130: spi_write_8bits(sreg_byte1);
+      0000CC 7B 03            [ 1]  265 	ld	a, (0x03, sp)
+      0000CE 88               [ 1]  266 	push	a
+      0000CF CDr00r00         [ 4]  267 	call	_spi_write_8bits
+      0000D2 84               [ 1]  268 	pop	a
+                                    269 ;	src/flash_driver.c: 131: spi_write_8bits(sreg_byte2);
+      0000D3 7B 04            [ 1]  270 	ld	a, (0x04, sp)
+      0000D5 88               [ 1]  271 	push	a
+      0000D6 CDr00r00         [ 4]  272 	call	_spi_write_8bits
+      0000D9 84               [ 1]  273 	pop	a
+                                    274 ;	src/flash_driver.c: 132: }
+      0000DA 81               [ 4]  275 	ret
+                                    276 ;	src/flash_driver.c: 138: void flash_busy_wait()
+                                    277 ;	-----------------------------------------
+                                    278 ;	 function flash_busy_wait
+                                    279 ;	-----------------------------------------
+      0000DB                        280 _flash_busy_wait:
+                                    281 ;	src/flash_driver.c: 140: while (flash_read_sreg(1) & (1 << SREG_BYTE1_BSY));
+      0000DB                        282 00101$:
+      0000DB 4B 01            [ 1]  283 	push	#0x01
+      0000DD CDr00rA6         [ 4]  284 	call	_flash_read_sreg
+      0000E0 5B 01            [ 2]  285 	addw	sp, #1
+      0000E2 44               [ 1]  286 	srl	a
+      0000E3 25 F6            [ 1]  287 	jrc	00101$
+                                    288 ;	src/flash_driver.c: 141: }
+      0000E5 81               [ 4]  289 	ret
+                                    290 ;	src/flash_driver.c: 150: void flash_erase_block(uint32_t addr, uint8_t cmd_block_erase)
+                                    291 ;	-----------------------------------------
+                                    292 ;	 function flash_erase_block
+                                    293 ;	-----------------------------------------
+      0000E6                        294 _flash_erase_block:
+                                    295 ;	src/flash_driver.c: 152: spi_write_8bits(cmd_block_erase);
+      0000E6 7B 07            [ 1]  296 	ld	a, (0x07, sp)
+      0000E8 88               [ 1]  297 	push	a
+      0000E9 CDr00r00         [ 4]  298 	call	_spi_write_8bits
+      0000EC 84               [ 1]  299 	pop	a
+                                    300 ;	src/flash_driver.c: 153: spi_write_24bits(addr);
+      0000ED 1E 05            [ 2]  301 	ldw	x, (0x05, sp)
+      0000EF 89               [ 2]  302 	pushw	x
+      0000F0 1E 05            [ 2]  303 	ldw	x, (0x05, sp)
+      0000F2 89               [ 2]  304 	pushw	x
+      0000F3 CDr00r00         [ 4]  305 	call	_spi_write_24bits
+      0000F6 5B 04            [ 2]  306 	addw	sp, #4
+                                    307 ;	src/flash_driver.c: 154: }
+      0000F8 81               [ 4]  308 	ret
+                                    309 ;	src/flash_driver.c: 160: void flash_write_enable()
+                                    310 ;	-----------------------------------------
+                                    311 ;	 function flash_write_enable
+                                    312 ;	-----------------------------------------
+      0000F9                        313 _flash_write_enable:
+                                    314 ;	src/flash_driver.c: 162: spi_write_8bits(CMD_WRITE_ENABLE);
+      0000F9 4B 06            [ 1]  315 	push	#0x06
+      0000FB CDr00r00         [ 4]  316 	call	_spi_write_8bits
+      0000FE 84               [ 1]  317 	pop	a
+                                    318 ;	src/flash_driver.c: 163: }
+      0000FF 81               [ 4]  319 	ret
+                                    320 ;	src/flash_driver.c: 168: void flash_erase_chip()
+                                    321 ;	-----------------------------------------
+                                    322 ;	 function flash_erase_chip
+                                    323 ;	-----------------------------------------
+      000100                        324 _flash_erase_chip:
+                                    325 ;	src/flash_driver.c: 170: spi_write_8bits(CMD_CHIP_ERASE);
+      000100 4B 60            [ 1]  326 	push	#0x60
+      000102 CDr00r00         [ 4]  327 	call	_spi_write_8bits
+      000105 84               [ 1]  328 	pop	a
+                                    329 ;	src/flash_driver.c: 171: }
+      000106 81               [ 4]  330 	ret
+                                    331 	.area CODE
+                                    332 	.area CONST
+                                    333 	.area INITIALIZER
+                                    334 	.area CABS (ABS)
