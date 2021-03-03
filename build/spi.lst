@@ -8,183 +8,198 @@
                                       8 ;--------------------------------------------------------
                                       9 ; Public variables in this module
                                      10 ;--------------------------------------------------------
-                                     11 	.globl _flash_spi_config
-                                     12 	.globl _flash_gpio_config
-                                     13 	.globl _spi_busy_wait
-                                     14 	.globl _spi_write_24bits
-                                     15 	.globl _spi_write_8bits
-                                     16 	.globl _spi_read_8bits
-                                     17 ;--------------------------------------------------------
-                                     18 ; ram data
-                                     19 ;--------------------------------------------------------
-                                     20 	.area DATA
-                                     21 ;--------------------------------------------------------
-                                     22 ; ram data
-                                     23 ;--------------------------------------------------------
-                                     24 	.area INITIALIZED
-                                     25 ;--------------------------------------------------------
-                                     26 ; absolute external ram data
-                                     27 ;--------------------------------------------------------
-                                     28 	.area DABS (ABS)
-                                     29 
-                                     30 ; default segment ordering for linker
-                                     31 	.area HOME
-                                     32 	.area GSINIT
-                                     33 	.area GSFINAL
-                                     34 	.area CONST
-                                     35 	.area INITIALIZER
-                                     36 	.area CODE
-                                     37 
-                                     38 ;--------------------------------------------------------
-                                     39 ; global & static initialisations
-                                     40 ;--------------------------------------------------------
-                                     41 	.area HOME
-                                     42 	.area GSINIT
-                                     43 	.area GSFINAL
-                                     44 	.area GSINIT
-                                     45 ;--------------------------------------------------------
-                                     46 ; Home
-                                     47 ;--------------------------------------------------------
-                                     48 	.area HOME
+                                     11 	.globl _spi_config
+                                     12 	.globl _spi_busy_wait
+                                     13 	.globl _spi_write_24bits
+                                     14 	.globl _spi_write_8bits
+                                     15 	.globl _spi_read_8bits
+                                     16 	.globl _spi_cs_active
+                                     17 	.globl _spi_cs_idle
+                                     18 ;--------------------------------------------------------
+                                     19 ; ram data
+                                     20 ;--------------------------------------------------------
+                                     21 	.area DATA
+                                     22 ;--------------------------------------------------------
+                                     23 ; ram data
+                                     24 ;--------------------------------------------------------
+                                     25 	.area INITIALIZED
+                                     26 ;--------------------------------------------------------
+                                     27 ; absolute external ram data
+                                     28 ;--------------------------------------------------------
+                                     29 	.area DABS (ABS)
+                                     30 
+                                     31 ; default segment ordering for linker
+                                     32 	.area HOME
+                                     33 	.area GSINIT
+                                     34 	.area GSFINAL
+                                     35 	.area CONST
+                                     36 	.area INITIALIZER
+                                     37 	.area CODE
+                                     38 
+                                     39 ;--------------------------------------------------------
+                                     40 ; global & static initialisations
+                                     41 ;--------------------------------------------------------
+                                     42 	.area HOME
+                                     43 	.area GSINIT
+                                     44 	.area GSFINAL
+                                     45 	.area GSINIT
+                                     46 ;--------------------------------------------------------
+                                     47 ; Home
+                                     48 ;--------------------------------------------------------
                                      49 	.area HOME
-                                     50 ;--------------------------------------------------------
-                                     51 ; code
-                                     52 ;--------------------------------------------------------
-                                     53 	.area CODE
-                                     54 ;	src/spi.c: 6: void flash_spi_config()
-                                     55 ;	-----------------------------------------
-                                     56 ;	 function flash_spi_config
-                                     57 ;	-----------------------------------------
-      000000                         58 _flash_spi_config:
-                                     59 ;	src/spi.c: 9: SPI_CR1 = 0;
-      000000 35 00 52 00      [ 1]   60 	mov	0x5200+0, #0x00
-                                     61 ;	src/spi.c: 10: SPI_CR2 = 0;
-      000004 35 00 52 01      [ 1]   62 	mov	0x5201+0, #0x00
-                                     63 ;	src/spi.c: 13: SPI_CR1 &= ~SPI_CR1_LSBFIRST;
-      000008 72 1F 52 00      [ 1]   64 	bres	20992, #7
-                                     65 ;	src/spi.c: 15: SPI_CR1 |= SPI_CR1_BR(0b111);
-      00000C C6 52 00         [ 1]   66 	ld	a, 0x5200
-      00000F AA 38            [ 1]   67 	or	a, #0x38
-      000011 C7 52 00         [ 1]   68 	ld	0x5200, a
-                                     69 ;	src/spi.c: 19: SPI_CR1 &= ~SPI_CR1_CPOL;
-      000014 72 13 52 00      [ 1]   70 	bres	20992, #1
-                                     71 ;	src/spi.c: 21: SPI_CR1 &= ~SPI_CR1_CPHA;
-      000018 72 11 52 00      [ 1]   72 	bres	20992, #0
-                                     73 ;	src/spi.c: 23: SPI_CR2 |= SPI_CR2_SSM; // bit 1 SSM=1 Software slave management, enabled
-      00001C 72 12 52 01      [ 1]   74 	bset	20993, #1
-                                     75 ;	src/spi.c: 24: SPI_CR2 |= SPI_CR2_SSI; // bit 0 SSI=1 Internal slave select, Master mode
-      000020 72 10 52 01      [ 1]   76 	bset	20993, #0
-                                     77 ;	src/spi.c: 25: SPI_CR1 |= SPI_CR1_MSTR;  // CR1 bit 2 MSTR = 1, Master configuration.
-      000024 72 14 52 00      [ 1]   78 	bset	20992, #2
-                                     79 ;	src/spi.c: 26: SPI_CR1 |= SPI_CR1_SPE; // Enable SPI
-      000028 72 1C 52 00      [ 1]   80 	bset	20992, #6
-                                     81 ;	src/spi.c: 27: }
-      00002C 81               [ 4]   82 	ret
-                                     83 ;	src/spi.c: 33: void flash_gpio_config()
-                                     84 ;	-----------------------------------------
-                                     85 ;	 function flash_gpio_config
-                                     86 ;	-----------------------------------------
-      00002D                         87 _flash_gpio_config:
-                                     88 ;	src/spi.c: 36: PORT(SPI_PORT, DDR) |= SPI_CLK | SPI_MOSI; // clock and MOSI
-      00002D C6 50 0C         [ 1]   89 	ld	a, 0x500c
-      000030 AA 60            [ 1]   90 	or	a, #0x60
-      000032 C7 50 0C         [ 1]   91 	ld	0x500c, a
-                                     92 ;	src/spi.c: 37: PORT(SPI_PORT, CR1) |= SPI_CLK | SPI_MOSI | SPI_MISO;
-      000035 C6 50 0D         [ 1]   93 	ld	a, 0x500d
-      000038 AA E0            [ 1]   94 	or	a, #0xe0
-      00003A C7 50 0D         [ 1]   95 	ld	0x500d, a
-                                     96 ;	src/spi.c: 40: PORT(SPI_PORT, DDR) |= SPI_CS;
-      00003D 72 18 50 0C      [ 1]   97 	bset	20492, #4
-                                     98 ;	src/spi.c: 41: PORT(SPI_PORT, CR1) |= SPI_CS;
-      000041 72 18 50 0D      [ 1]   99 	bset	20493, #4
-                                    100 ;	src/spi.c: 42: PORT(SPI_PORT, ODR) |= SPI_CS; // CS high
-      000045 72 18 50 0A      [ 1]  101 	bset	20490, #4
-                                    102 ;	src/spi.c: 43: }
-      000049 81               [ 4]  103 	ret
-                                    104 ;	src/spi.c: 49: void spi_busy_wait()
-                                    105 ;	-----------------------------------------
-                                    106 ;	 function spi_busy_wait
-                                    107 ;	-----------------------------------------
-      00004A                        108 _spi_busy_wait:
-                                    109 ;	src/spi.c: 51: while (SPI_SR & SPI_SR_BSY);
-      00004A                        110 00101$:
-      00004A C6 52 03         [ 1]  111 	ld	a, 0x5203
-      00004D 2B FB            [ 1]  112 	jrmi	00101$
-                                    113 ;	src/spi.c: 52: }
-      00004F 81               [ 4]  114 	ret
-                                    115 ;	src/spi.c: 58: void spi_write_24bits(uint32_t data)
-                                    116 ;	-----------------------------------------
-                                    117 ;	 function spi_write_24bits
-                                    118 ;	-----------------------------------------
-      000050                        119 _spi_write_24bits:
-      000050 88               [ 1]  120 	push	a
-                                    121 ;	src/spi.c: 60: for (int8_t i = 2; i >= 0; i--)
-      000051 A6 02            [ 1]  122 	ld	a, #0x02
-      000053 6B 01            [ 1]  123 	ld	(0x01, sp), a
-      000055                        124 00109$:
-      000055 0D 01            [ 1]  125 	tnz	(0x01, sp)
-      000057 2B 21            [ 1]  126 	jrmi	00111$
-                                    127 ;	src/spi.c: 62: SPI_WRITE8(0xFF & (data >> (i << 4)));   // Explanation: i<<4 = i*8 = 16, 8, 0 for i = 2, 1, 0 respectively. So, we're shifting data and then sending
-      000059 7B 01            [ 1]  128 	ld	a, (0x01, sp)
-      00005B 4E               [ 1]  129 	swap	a
-      00005C A4 F0            [ 1]  130 	and	a, #0xf0
-      00005E 1E 06            [ 2]  131 	ldw	x, (0x06, sp)
-      000060 16 04            [ 2]  132 	ldw	y, (0x04, sp)
-      000062 4D               [ 1]  133 	tnz	a
-      000063 27 06            [ 1]  134 	jreq	00136$
-      000065                        135 00135$:
-      000065 90 54            [ 2]  136 	srlw	y
-      000067 56               [ 2]  137 	rrcw	x
-      000068 4A               [ 1]  138 	dec	a
-      000069 26 FA            [ 1]  139 	jrne	00135$
-      00006B                        140 00136$:
-      00006B 9F               [ 1]  141 	ld	a, xl
-      00006C C7 52 04         [ 1]  142 	ld	0x5204, a
-      00006F                        143 00101$:
-      00006F C6 52 03         [ 1]  144 	ld	a, 0x5203
-      000072 A5 02            [ 1]  145 	bcp	a, #0x02
-      000074 27 F9            [ 1]  146 	jreq	00101$
-                                    147 ;	src/spi.c: 60: for (int8_t i = 2; i >= 0; i--)
-      000076 0A 01            [ 1]  148 	dec	(0x01, sp)
-      000078 20 DB            [ 2]  149 	jra	00109$
-      00007A                        150 00111$:
-                                    151 ;	src/spi.c: 64: }
-      00007A 84               [ 1]  152 	pop	a
-      00007B 81               [ 4]  153 	ret
-                                    154 ;	src/spi.c: 70: void spi_write_8bits(uint8_t data)
-                                    155 ;	-----------------------------------------
-                                    156 ;	 function spi_write_8bits
-                                    157 ;	-----------------------------------------
-      00007C                        158 _spi_write_8bits:
-                                    159 ;	src/spi.c: 72: SPI_WRITE8(0xFF & data);
-      00007C 7B 03            [ 1]  160 	ld	a, (0x03, sp)
-      00007E C7 52 04         [ 1]  161 	ld	0x5204, a
-      000081                        162 00101$:
-      000081 C6 52 03         [ 1]  163 	ld	a, 0x5203
-      000084 A5 02            [ 1]  164 	bcp	a, #0x02
-      000086 27 F9            [ 1]  165 	jreq	00101$
-                                    166 ;	src/spi.c: 73: }
-      000088 81               [ 4]  167 	ret
-                                    168 ;	src/spi.c: 79: uint8_t spi_read_8bits()
-                                    169 ;	-----------------------------------------
-                                    170 ;	 function spi_read_8bits
-                                    171 ;	-----------------------------------------
-      000089                        172 _spi_read_8bits:
-                                    173 ;	src/spi.c: 82: SPI_READ8(d);
-      000089 35 FF 52 04      [ 1]  174 	mov	0x5204+0, #0xff
-      00008D                        175 00101$:
-      00008D C6 52 03         [ 1]  176 	ld	a, 0x5203
-      000090 A5 02            [ 1]  177 	bcp	a, #0x02
-      000092 27 F9            [ 1]  178 	jreq	00101$
-      000094                        179 00107$:
-      000094 C6 52 03         [ 1]  180 	ld	a, 0x5203
-      000097 44               [ 1]  181 	srl	a
-      000098 24 FA            [ 1]  182 	jrnc	00107$
-      00009A C6 52 04         [ 1]  183 	ld	a, 0x5204
-                                    184 ;	src/spi.c: 83: return d;
-                                    185 ;	src/spi.c: 84: }
-      00009D 81               [ 4]  186 	ret
-                                    187 	.area CODE
-                                    188 	.area CONST
-                                    189 	.area INITIALIZER
-                                    190 	.area CABS (ABS)
+                                     50 	.area HOME
+                                     51 ;--------------------------------------------------------
+                                     52 ; code
+                                     53 ;--------------------------------------------------------
+                                     54 	.area CODE
+                                     55 ;	src/spi.c: 6: void spi_config()
+                                     56 ;	-----------------------------------------
+                                     57 ;	 function spi_config
+                                     58 ;	-----------------------------------------
+      000000                         59 _spi_config:
+                                     60 ;	src/spi.c: 9: PORT(SPI_PORT, DDR) |= SPI_CLK | SPI_MOSI; // clock and MOSI
+      000000 C6 50 0C         [ 1]   61 	ld	a, 0x500c
+      000003 AA 60            [ 1]   62 	or	a, #0x60
+      000005 C7 50 0C         [ 1]   63 	ld	0x500c, a
+                                     64 ;	src/spi.c: 10: PORT(SPI_PORT, CR1) |= SPI_CLK | SPI_MOSI | SPI_MISO;
+      000008 C6 50 0D         [ 1]   65 	ld	a, 0x500d
+      00000B AA E0            [ 1]   66 	or	a, #0xe0
+      00000D C7 50 0D         [ 1]   67 	ld	0x500d, a
+                                     68 ;	src/spi.c: 13: PORT(SPI_PORT, DDR) |= SPI_CS;
+      000010 72 18 50 0C      [ 1]   69 	bset	20492, #4
+                                     70 ;	src/spi.c: 14: PORT(SPI_PORT, CR1) |= SPI_CS;
+      000014 72 18 50 0D      [ 1]   71 	bset	20493, #4
+                                     72 ;	src/spi.c: 15: PORT(SPI_PORT, ODR) |= SPI_CS; // CS high
+      000018 72 18 50 0A      [ 1]   73 	bset	20490, #4
+                                     74 ;	src/spi.c: 19: SPI_CR1 = 0;
+      00001C 35 00 52 00      [ 1]   75 	mov	0x5200+0, #0x00
+                                     76 ;	src/spi.c: 20: SPI_CR2 = 0;
+      000020 35 00 52 01      [ 1]   77 	mov	0x5201+0, #0x00
+                                     78 ;	src/spi.c: 23: SPI_CR1 &= ~SPI_CR1_LSBFIRST;
+      000024 72 1F 52 00      [ 1]   79 	bres	20992, #7
+                                     80 ;	src/spi.c: 25: SPI_CR1 |= SPI_CR1_BR(0b111);
+      000028 C6 52 00         [ 1]   81 	ld	a, 0x5200
+      00002B AA 38            [ 1]   82 	or	a, #0x38
+      00002D C7 52 00         [ 1]   83 	ld	0x5200, a
+                                     84 ;	src/spi.c: 29: SPI_CR1 &= ~SPI_CR1_CPOL;
+      000030 72 13 52 00      [ 1]   85 	bres	20992, #1
+                                     86 ;	src/spi.c: 31: SPI_CR1 &= ~SPI_CR1_CPHA;
+      000034 72 11 52 00      [ 1]   87 	bres	20992, #0
+                                     88 ;	src/spi.c: 33: SPI_CR2 |= SPI_CR2_SSM; // bit 1 SSM=1 Software slave management, enabled
+      000038 72 12 52 01      [ 1]   89 	bset	20993, #1
+                                     90 ;	src/spi.c: 34: SPI_CR2 |= SPI_CR2_SSI; // bit 0 SSI=1 Internal slave select, Master mode
+      00003C 72 10 52 01      [ 1]   91 	bset	20993, #0
+                                     92 ;	src/spi.c: 35: SPI_CR1 |= SPI_CR1_MSTR;  // CR1 bit 2 MSTR = 1, Master configuration.
+      000040 72 14 52 00      [ 1]   93 	bset	20992, #2
+                                     94 ;	src/spi.c: 36: SPI_CR1 |= SPI_CR1_SPE; // Enable SPI
+      000044 72 1C 52 00      [ 1]   95 	bset	20992, #6
+                                     96 ;	src/spi.c: 37: }
+      000048 81               [ 4]   97 	ret
+                                     98 ;	src/spi.c: 43: void spi_busy_wait()
+                                     99 ;	-----------------------------------------
+                                    100 ;	 function spi_busy_wait
+                                    101 ;	-----------------------------------------
+      000049                        102 _spi_busy_wait:
+                                    103 ;	src/spi.c: 45: while (SPI_SR & SPI_SR_BSY);
+      000049                        104 00101$:
+      000049 C6 52 03         [ 1]  105 	ld	a, 0x5203
+      00004C 2B FB            [ 1]  106 	jrmi	00101$
+                                    107 ;	src/spi.c: 46: }
+      00004E 81               [ 4]  108 	ret
+                                    109 ;	src/spi.c: 52: void spi_write_24bits(uint32_t data)
+                                    110 ;	-----------------------------------------
+                                    111 ;	 function spi_write_24bits
+                                    112 ;	-----------------------------------------
+      00004F                        113 _spi_write_24bits:
+      00004F 88               [ 1]  114 	push	a
+                                    115 ;	src/spi.c: 54: for (int8_t i = 2; i >= 0; i--)
+      000050 A6 02            [ 1]  116 	ld	a, #0x02
+      000052 6B 01            [ 1]  117 	ld	(0x01, sp), a
+      000054                        118 00109$:
+      000054 0D 01            [ 1]  119 	tnz	(0x01, sp)
+      000056 2B 21            [ 1]  120 	jrmi	00111$
+                                    121 ;	src/spi.c: 56: SPI_WRITE8(0xFF & (data >> (i << 4)));   // Explanation: i<<4 = i*8 = 16, 8, 0 for i = 2, 1, 0 respectively. So, we're shifting data and then sending
+      000058 7B 01            [ 1]  122 	ld	a, (0x01, sp)
+      00005A 4E               [ 1]  123 	swap	a
+      00005B A4 F0            [ 1]  124 	and	a, #0xf0
+      00005D 1E 06            [ 2]  125 	ldw	x, (0x06, sp)
+      00005F 16 04            [ 2]  126 	ldw	y, (0x04, sp)
+      000061 4D               [ 1]  127 	tnz	a
+      000062 27 06            [ 1]  128 	jreq	00136$
+      000064                        129 00135$:
+      000064 90 54            [ 2]  130 	srlw	y
+      000066 56               [ 2]  131 	rrcw	x
+      000067 4A               [ 1]  132 	dec	a
+      000068 26 FA            [ 1]  133 	jrne	00135$
+      00006A                        134 00136$:
+      00006A 9F               [ 1]  135 	ld	a, xl
+      00006B C7 52 04         [ 1]  136 	ld	0x5204, a
+      00006E                        137 00101$:
+      00006E C6 52 03         [ 1]  138 	ld	a, 0x5203
+      000071 A5 02            [ 1]  139 	bcp	a, #0x02
+      000073 27 F9            [ 1]  140 	jreq	00101$
+                                    141 ;	src/spi.c: 54: for (int8_t i = 2; i >= 0; i--)
+      000075 0A 01            [ 1]  142 	dec	(0x01, sp)
+      000077 20 DB            [ 2]  143 	jra	00109$
+      000079                        144 00111$:
+                                    145 ;	src/spi.c: 58: }
+      000079 84               [ 1]  146 	pop	a
+      00007A 81               [ 4]  147 	ret
+                                    148 ;	src/spi.c: 64: void spi_write_8bits(uint8_t data)
+                                    149 ;	-----------------------------------------
+                                    150 ;	 function spi_write_8bits
+                                    151 ;	-----------------------------------------
+      00007B                        152 _spi_write_8bits:
+                                    153 ;	src/spi.c: 66: SPI_WRITE8(0xFF & data);
+      00007B 7B 03            [ 1]  154 	ld	a, (0x03, sp)
+      00007D C7 52 04         [ 1]  155 	ld	0x5204, a
+      000080                        156 00101$:
+      000080 C6 52 03         [ 1]  157 	ld	a, 0x5203
+      000083 A5 02            [ 1]  158 	bcp	a, #0x02
+      000085 27 F9            [ 1]  159 	jreq	00101$
+                                    160 ;	src/spi.c: 67: }
+      000087 81               [ 4]  161 	ret
+                                    162 ;	src/spi.c: 73: uint8_t spi_read_8bits()
+                                    163 ;	-----------------------------------------
+                                    164 ;	 function spi_read_8bits
+                                    165 ;	-----------------------------------------
+      000088                        166 _spi_read_8bits:
+                                    167 ;	src/spi.c: 76: SPI_READ8(d);
+      000088 35 1A 52 04      [ 1]  168 	mov	0x5204+0, #0x1a
+      00008C                        169 00101$:
+      00008C C6 52 03         [ 1]  170 	ld	a, 0x5203
+      00008F A5 02            [ 1]  171 	bcp	a, #0x02
+      000091 27 F9            [ 1]  172 	jreq	00101$
+      000093                        173 00107$:
+      000093 C6 52 03         [ 1]  174 	ld	a, 0x5203
+      000096 44               [ 1]  175 	srl	a
+      000097 24 FA            [ 1]  176 	jrnc	00107$
+      000099 C6 52 04         [ 1]  177 	ld	a, 0x5204
+                                    178 ;	src/spi.c: 77: return d;
+                                    179 ;	src/spi.c: 78: }
+      00009C 81               [ 4]  180 	ret
+                                    181 ;	src/spi.c: 84: void spi_cs_active()
+                                    182 ;	-----------------------------------------
+                                    183 ;	 function spi_cs_active
+                                    184 ;	-----------------------------------------
+      00009D                        185 _spi_cs_active:
+                                    186 ;	src/spi.c: 86: SPI_CS_ACTIVE();
+      00009D 72 19 50 0A      [ 1]  187 	bres	20490, #4
+                                    188 ;	src/spi.c: 87: }
+      0000A1 81               [ 4]  189 	ret
+                                    190 ;	src/spi.c: 93: void spi_cs_idle()
+                                    191 ;	-----------------------------------------
+                                    192 ;	 function spi_cs_idle
+                                    193 ;	-----------------------------------------
+      0000A2                        194 _spi_cs_idle:
+                                    195 ;	src/spi.c: 95: SPI_CS_IDLE();
+      0000A2                        196 00101$:
+      0000A2 C6 52 03         [ 1]  197 	ld	a, 0x5203
+      0000A5 2B FB            [ 1]  198 	jrmi	00101$
+      0000A7 72 18 50 0A      [ 1]  199 	bset	20490, #4
+                                    200 ;	src/spi.c: 96: }
+      0000AB 81               [ 4]  201 	ret
+                                    202 	.area CODE
+                                    203 	.area CONST
+                                    204 	.area INITIALIZER
+                                    205 	.area CABS (ABS)

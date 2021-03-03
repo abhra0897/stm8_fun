@@ -7,22 +7,23 @@ Symbol Table
     .__.ABS.                                                    =  000000 G
     .__.CPU.                                                    =  000000 L
     .__.H$L.                                                    =  000001 L
-  9 _flash_busy_wait                                               0000DB GR
-  9 _flash_erase_block                                             0000E6 GR
-  9 _flash_erase_chip                                              000100 GR
-  9 _flash_read_from_addr                                          00001C GR
-  9 _flash_read_nbytes                                             00007C GR
-  9 _flash_read_sreg                                               0000A6 GR
-  9 _flash_set_read_addr                                           00004A GR
-  9 _flash_set_write_addr                                          000038 GR
-  9 _flash_write_enable                                            0000F9 GR
-  9 _flash_write_nbytes                                            00005C GR
-  9 _flash_write_sreg                                              0000C6 GR
+  9 _flash_busy_wait                                               000104 GR
+  9 _flash_erase_block                                             00010F GR
+  9 _flash_erase_chip                                              000133 GR
+  9 _flash_read_from_addr                                          000021 GR
+  9 _flash_read_nbytes                                             000086 GR
+  9 _flash_read_sreg                                               0000B0 GR
+  9 _flash_set_read_addr                                           000054 GR
+  9 _flash_set_write_addr                                          000042 GR
+  9 _flash_write_enable                                            000127 GR
+  9 _flash_write_nbytes                                            000066 GR
+  9 _flash_write_sreg                                              0000EA GR
   9 _flash_write_to_addr                                           000000 GR
+    _spi_cs_active                                                 ****** GX
+    _spi_cs_idle                                                   ****** GX
     _spi_read_8bits                                                ****** GX
     _spi_write_24bits                                              ****** GX
     _spi_write_8bits                                               ****** GX
-
 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (STMicroelectronics STM8), page 2.
 Hexadecimal [24-Bits]
@@ -38,6 +39,6 @@ Area Table
    6 GSFINAL                                    size      0   flags    0
    7 CONST                                      size      0   flags    0
    8 INITIALIZER                                size      0   flags    0
-   9 CODE                                       size    107   flags    0
+   9 CODE                                       size    13F   flags    0
    A CABS                                       size      0   flags    8
 

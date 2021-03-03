@@ -3,8 +3,18 @@
 /**
  * Configure the SPI bus settings
  */
-void flash_spi_config()
+void spi_config()
 {
+    // SPI port setup: MISO is pullup in, MOSI & SCK are push-pull out
+    PORT(SPI_PORT, DDR) |= SPI_CLK | SPI_MOSI; // clock and MOSI
+    PORT(SPI_PORT, CR1) |= SPI_CLK | SPI_MOSI | SPI_MISO;
+
+    // CS/SS (PC4) as output
+    PORT(SPI_PORT, DDR) |= SPI_CS;
+    PORT(SPI_PORT, CR1) |= SPI_CS;
+    PORT(SPI_PORT, ODR) |= SPI_CS; // CS high
+
+
     // SPI registers: First reset everything
     SPI_CR1 = 0;
     SPI_CR2 = 0;
@@ -24,22 +34,6 @@ void flash_spi_config()
     SPI_CR2 |= SPI_CR2_SSI; // bit 0 SSI=1 Internal slave select, Master mode
     SPI_CR1 |= SPI_CR1_MSTR;  // CR1 bit 2 MSTR = 1, Master configuration.
     SPI_CR1 |= SPI_CR1_SPE; // Enable SPI
-}
-
-
-/**
- * Configure the GPIO settings
- */
-void flash_gpio_config()
-{
-    // SPI port setup: MISO is pullup in, MOSI & SCK are push-pull out
-    PORT(SPI_PORT, DDR) |= SPI_CLK | SPI_MOSI; // clock and MOSI
-    PORT(SPI_PORT, CR1) |= SPI_CLK | SPI_MOSI | SPI_MISO;
-
-    // CS/SS (PC4) as output
-    PORT(SPI_PORT, DDR) |= SPI_CS;
-    PORT(SPI_PORT, CR1) |= SPI_CS;
-    PORT(SPI_PORT, ODR) |= SPI_CS; // CS high
 }
 
 
@@ -81,4 +75,22 @@ uint8_t spi_read_8bits()
     uint8_t d;
     SPI_READ8(d);
     return d;
+}
+
+
+/**
+ * Activate CS by pulling it low
+ */
+void spi_cs_active()
+{
+    SPI_CS_ACTIVE();
+}
+
+
+/**
+ * Idle CS by pulling it high
+ */
+void spi_cs_idle()
+{
+    SPI_CS_IDLE();
 }

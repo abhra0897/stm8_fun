@@ -14,8 +14,10 @@ void flash_write_to_addr(uint32_t addr, uint8_t *buff, uint16_t nbytes)
 {
     if (buff == NULL)
         return;
+    spi_cs_active();
     flash_set_write_addr(addr);
     flash_write_nbytes(buff, nbytes);
+    spi_cs_idle();
 }
 
 
@@ -29,8 +31,10 @@ void flash_read_from_addr(uint32_t addr, uint8_t *buff, uint16_t nbytes)
 {
     if (buff == NULL)
         return;
+    spi_cs_active();
     flash_set_read_addr(addr);
     flash_read_nbytes(buff, nbytes);
+    spi_cs_idle();
 }
 
 
@@ -106,14 +110,18 @@ void flash_read_nbytes(uint8_t *buff, uint16_t nbytes)
 uint8_t flash_read_sreg(uint8_t sreg_no)
 {
     uint8_t sreg_val = 0; 
-    if (sreg_no == 1)
-        spi_write_8bits(CMD_READ_SREG_BYTE1);
-    else if (sreg_no == 2)
-        spi_write_8bits(CMD_READ_SREG_BYTE2);
-    else
-        return 0;
 
-    sreg_val = spi_read_8bits();
+    if (sreg_no == 1 || sreg_no == 2)
+    {
+        spi_cs_active();
+        if (sreg_no == 1)
+            spi_write_8bits(CMD_READ_SREG_BYTE1);
+        else
+            spi_write_8bits(CMD_READ_SREG_BYTE2);
+
+        sreg_val = spi_read_8bits();
+        spi_cs_idle();
+    }
 
     return sreg_val;
 }
@@ -126,9 +134,11 @@ uint8_t flash_read_sreg(uint8_t sreg_no)
  */
 void flash_write_sreg(uint8_t sreg_byte1, uint8_t sreg_byte2)
 {
+    spi_cs_active();
     spi_write_8bits(CMD_WRITE_SREG);
     spi_write_8bits(sreg_byte1);
     spi_write_8bits(sreg_byte2);
+    spi_cs_idle();
 }
 
 
@@ -149,8 +159,10 @@ void flash_busy_wait()
  */
 void flash_erase_block(uint32_t addr, uint8_t cmd_block_erase)
 {
+    spi_cs_active();
     spi_write_8bits(cmd_block_erase);
     spi_write_24bits(addr);
+    spi_cs_idle();
 }
 
 
@@ -159,7 +171,9 @@ void flash_erase_block(uint32_t addr, uint8_t cmd_block_erase)
  */
 void flash_write_enable()
 {
+    spi_cs_active();
     spi_write_8bits(CMD_WRITE_ENABLE);
+    spi_cs_idle();
 }
 
 /**
@@ -167,7 +181,9 @@ void flash_write_enable()
  */
 void flash_erase_chip()
 {
+    spi_cs_active();
     spi_write_8bits(CMD_CHIP_ERASE);
+    spi_cs_idle();
 }
 
 
