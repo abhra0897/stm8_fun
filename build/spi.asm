@@ -111,93 +111,92 @@ _spi_busy_wait:
 ;	 function spi_write_24bits
 ;	-----------------------------------------
 _spi_write_24bits:
-	push	a
-;	src/spi.c: 54: for (int8_t i = 2; i >= 0; i--)
-	ld	a, #0x02
-	ld	(0x01, sp), a
-00109$:
-	tnz	(0x01, sp)
-	jrmi	00111$
-;	src/spi.c: 56: SPI_WRITE8(0xFF & (data >> (i << 4)));   // Explanation: i<<4 = i*8 = 16, 8, 0 for i = 2, 1, 0 respectively. So, we're shifting data and then sending
-	ld	a, (0x01, sp)
-	swap	a
-	and	a, #0xf0
-	ldw	x, (0x06, sp)
-	ldw	y, (0x04, sp)
-	tnz	a
-	jreq	00136$
-00135$:
-	srlw	y
-	rrcw	x
-	dec	a
-	jrne	00135$
-00136$:
+;	src/spi.c: 59: SPI_WRITE8(data >> 16);
+	ldw	x, (0x03, sp)
 	ld	a, xl
 	ld	0x5204, a
 00101$:
 	ld	a, 0x5203
 	bcp	a, #0x02
 	jreq	00101$
-;	src/spi.c: 54: for (int8_t i = 2; i >= 0; i--)
-	dec	(0x01, sp)
-	jra	00109$
-00111$:
-;	src/spi.c: 58: }
-	pop	a
+	ld	a, 0x5204
+;	src/spi.c: 60: SPI_WRITE8(data >> 8);
+	ldw	x, (0x05, sp)
+	ld	a, xh
+	clrw	x
+	ld	0x5204, a
+00107$:
+	ld	a, 0x5203
+	bcp	a, #0x02
+	jreq	00107$
+	ld	a, 0x5204
+;	src/spi.c: 61: SPI_WRITE8(data >> 0);
+	ld	a, (0x06, sp)
+	ld	0x5204, a
+00113$:
+	ld	a, 0x5203
+	bcp	a, #0x02
+	jreq	00113$
+	ld	a, 0x5204
+;	src/spi.c: 62: }
 	ret
-;	src/spi.c: 64: void spi_write_8bits(uint8_t data)
+;	src/spi.c: 68: void spi_write_8bits(uint8_t data)
 ;	-----------------------------------------
 ;	 function spi_write_8bits
 ;	-----------------------------------------
 _spi_write_8bits:
-;	src/spi.c: 66: SPI_WRITE8(0xFF & data);
+;	src/spi.c: 70: SPI_WRITE8(data);
+	ldw	x, #0x5204
 	ld	a, (0x03, sp)
-	ld	0x5204, a
+	ld	(x), a
 00101$:
 	ld	a, 0x5203
 	bcp	a, #0x02
 	jreq	00101$
-;	src/spi.c: 67: }
+	ld	a, 0x5204
+;	src/spi.c: 71: }
 	ret
-;	src/spi.c: 73: uint8_t spi_read_8bits()
+;	src/spi.c: 77: uint8_t spi_read_8bits()
 ;	-----------------------------------------
 ;	 function spi_read_8bits
 ;	-----------------------------------------
 _spi_read_8bits:
-;	src/spi.c: 76: SPI_READ8(d);
-	mov	0x5204+0, #0x1a
+;	src/spi.c: 80: SPI_READ8(d);
+	mov	0x5204+0, #0xff
 00101$:
 	ld	a, 0x5203
 	bcp	a, #0x02
 	jreq	00101$
+	ld	a, 0x5204
 00107$:
 	ld	a, 0x5203
 	srl	a
 	jrnc	00107$
 	ld	a, 0x5204
-;	src/spi.c: 77: return d;
-;	src/spi.c: 78: }
+	ld	a, 0x5204
+;	src/spi.c: 81: return d;
+;	src/spi.c: 82: }
 	ret
-;	src/spi.c: 84: void spi_cs_active()
+;	src/spi.c: 88: void spi_cs_active()
 ;	-----------------------------------------
 ;	 function spi_cs_active
 ;	-----------------------------------------
 _spi_cs_active:
-;	src/spi.c: 86: SPI_CS_ACTIVE();
+;	src/spi.c: 90: SPI_CS_ACTIVE();
 	bres	20490, #4
-;	src/spi.c: 87: }
+;	src/spi.c: 91: }
 	ret
-;	src/spi.c: 93: void spi_cs_idle()
+;	src/spi.c: 97: void spi_cs_idle()
 ;	-----------------------------------------
 ;	 function spi_cs_idle
 ;	-----------------------------------------
 _spi_cs_idle:
-;	src/spi.c: 95: SPI_CS_IDLE();
+;	src/spi.c: 99: SPI_CS_IDLE();
 00101$:
 	ld	a, 0x5203
 	jrmi	00101$
 	bset	20490, #4
-;	src/spi.c: 96: }
+;	src/spi.c: 100: }
 	ret
 	.area CODE
 	.area CONST

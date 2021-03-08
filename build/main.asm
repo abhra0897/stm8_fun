@@ -10,16 +10,18 @@
 ;--------------------------------------------------------
 	.globl _main
 	.globl _flash_write_enable
-	.globl _flash_erase_block
+	.globl _flash_erase_chip
 	.globl _flash_busy_wait
 	.globl _flash_read_from_addr
 	.globl _flash_write_to_addr
+	.globl _spi_cs_idle
+	.globl _spi_cs_active
 	.globl _spi_config
 	.globl _strlen
 	.globl _uart_init
-	.globl _gpio_init
 	.globl _uart_write
 	.globl _uart_write_8bits
+	.globl _int_to_hex_str
 ;--------------------------------------------------------
 ; ram data
 ;--------------------------------------------------------
@@ -99,7 +101,7 @@ __sdcc_program_startup:
 ;	 function main
 ;	-----------------------------------------
 _main:
-	sub	sp, #201
+	sub	sp, #203
 ;	src/main.c: 18: CLK_CKDIVR = 0;
 	mov	0x50c6+0, #0x00
 ;	src/main.c: 19: uart_init();
@@ -506,10 +508,10 @@ _main:
 	clr	(200, x)
 ;	src/main.c: 23: for (uint8_t i = 0; i < 100; i++)
 	clr	a
-00104$:
+00127$:
 	cp	a, #0x64
 	jrnc	00101$
-;	src/main.c: 25: buff[i] = i;
+;	src/main.c: 25: buff[i] = i/* +7+'0' */;
 	ldw	x, sp
 	incw	x
 	pushw	x
@@ -520,94 +522,61 @@ _main:
 	ld	(x), a
 ;	src/main.c: 23: for (uint8_t i = 0; i < 100; i++)
 	inc	a
-	jra	00104$
+	jra	00127$
 00101$:
-;	src/main.c: 28: uart_write("Configuring SPI...\n");
-	push	#<(___str_0 + 0)
-	push	#((___str_0 + 0) >> 8)
-	call	_uart_write
-	addw	sp, #2
-;	src/main.c: 29: spi_config();
+;	src/main.c: 28: spi_config();
 	call	_spi_config
-;	src/main.c: 31: uart_write("Prepare to write...\n");
-	push	#<(___str_1 + 0)
-	push	#((___str_1 + 0) >> 8)
-	call	_uart_write
-	addw	sp, #2
-;	src/main.c: 32: flash_write_enable();
+;	src/main.c: 30: flash_write_enable();
 	call	_flash_write_enable
-;	src/main.c: 33: flash_erase_block(0, CMD_4K_BLOCK_ERASE);
-	push	#0x20
-	clrw	x
-	pushw	x
-	clrw	x
-	pushw	x
-	call	_flash_erase_block
-	addw	sp, #5
-;	src/main.c: 34: flash_busy_wait();
+;	src/main.c: 32: flash_erase_chip();
+	call	_flash_erase_chip
+;	src/main.c: 33: flash_busy_wait();
 	call	_flash_busy_wait
-;	src/main.c: 42: flash_write_enable();
+;	src/main.c: 35: flash_write_enable();
 	call	_flash_write_enable
-;	src/main.c: 43: uart_write("Writing...\n");
-	push	#<(___str_2 + 0)
-	push	#((___str_2 + 0) >> 8)
-	call	_uart_write
-	addw	sp, #2
-;	src/main.c: 44: flash_write_to_addr(0, buff, 100);
+;	src/main.c: 36: flash_write_to_addr(0x012345, buff, 100);
 	push	#0x64
 	push	#0x00
 	ldw	x, sp
 	addw	x, #3
 	pushw	x
-	clrw	x
-	pushw	x
-	clrw	x
-	pushw	x
+	push	#0x45
+	push	#0x23
+	push	#0x01
+	push	#0x00
 	call	_flash_write_to_addr
 	addw	sp, #8
-;	src/main.c: 45: flash_busy_wait();
+;	src/main.c: 37: flash_busy_wait();
 	call	_flash_busy_wait
-;	src/main.c: 46: uart_write("Write complete...\n");
-	push	#<(___str_3 + 0)
-	push	#((___str_3 + 0) >> 8)
-	call	_uart_write
-	addw	sp, #2
-;	src/main.c: 48: uart_write("Reading...\n");
-	push	#<(___str_4 + 0)
-	push	#((___str_4 + 0) >> 8)
-	call	_uart_write
-	addw	sp, #2
-;	src/main.c: 49: flash_read_from_addr(0, buff2, 100);
+;	src/main.c: 39: uart_write_8bits(0x99); //indicates start
+	push	#0x99
+	call	_uart_write_8bits
+	pop	a
+;	src/main.c: 78: flash_read_from_addr(0x012345, buff2, 100);
 	push	#0x64
 	push	#0x00
 	ldw	x, sp
 	addw	x, #103
 	pushw	x
-	clrw	x
-	pushw	x
-	clrw	x
-	pushw	x
+	push	#0x45
+	push	#0x23
+	push	#0x01
+	push	#0x00
 	call	_flash_read_from_addr
 	addw	sp, #8
-;	src/main.c: 50: uart_write("Read complete...\n");
-	push	#<(___str_5 + 0)
-	push	#((___str_5 + 0) >> 8)
-	call	_uart_write
-	addw	sp, #2
-;	src/main.c: 52: uart_write("Comparing...\n");
-	push	#<(___str_6 + 0)
-	push	#((___str_6 + 0) >> 8)
-	call	_uart_write
-	addw	sp, #2
-;	src/main.c: 54: for(uint8_t ii = 0; ii < 100; ii++)
+;	src/main.c: 81: char hex_string[2] = {0};
 	clr	(0xc9, sp)
-00107$:
-	ld	a, (0xc9, sp)
+	ldw	x, sp
+	clr	(202, x)
+;	src/main.c: 82: for(uint8_t ii = 0; ii < 100; ii++)
+	clr	(0xcb, sp)
+00136$:
+	ld	a, (0xcb, sp)
 	cp	a, #0x64
-	jrnc	00102$
-;	src/main.c: 56: uart_write_8bits(buff2[ii]);
+	jrnc	00124$
+;	src/main.c: 85: uart_write_8bits(buff2[ii]);
 	clrw	x
-	ld	a, (0xc9, sp)
+	ld	a, (0xcb, sp)
 	ld	xl, a
 	pushw	x
 	ldw	x, sp
@@ -618,47 +587,38 @@ _main:
 	push	a
 	call	_uart_write_8bits
 	pop	a
-;	src/main.c: 54: for(uint8_t ii = 0; ii < 100; ii++)
-	inc	(0xc9, sp)
-	jra	00107$
-00102$:
-;	src/main.c: 63: uart_write("Error count: ");
-	push	#<(___str_7 + 0)
-	push	#((___str_7 + 0) >> 8)
-	call	_uart_write
-;	src/main.c: 66: }
+;	src/main.c: 82: for(uint8_t ii = 0; ii < 100; ii++)
+	inc	(0xcb, sp)
+	jra	00136$
+;	src/main.c: 89: while(1);
+00124$:
+	jra	00124$
+;	src/main.c: 90: }
 	addw	sp, #203
 	ret
-;	src/main.c: 69: void uart_init()
+;	src/main.c: 93: void uart_init()
 ;	-----------------------------------------
 ;	 function uart_init
 ;	-----------------------------------------
 _uart_init:
-;	src/main.c: 72: UART1_CR2 |= UART_CR2_TEN; // Transmitter enable
+;	src/main.c: 96: UART1_CR2 |= UART_CR2_TEN; // Transmitter enable
 	bset	21045, #3
-;	src/main.c: 74: UART1_CR3 &= ~(UART_CR3_STOP1 | UART_CR3_STOP2); // 1 stop bit
+;	src/main.c: 98: UART1_CR3 &= ~(UART_CR3_STOP1 | UART_CR3_STOP2); // 1 stop bit
 	ld	a, 0x5236
 	and	a, #0xcf
 	ld	0x5236, a
-;	src/main.c: 76: UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
+;	src/main.c: 100: UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
 	mov	0x5233+0, #0x01
 	mov	0x5232+0, #0x34
-;	src/main.c: 77: }
+;	src/main.c: 101: }
 	ret
-;	src/main.c: 79: void gpio_init()
-;	-----------------------------------------
-;	 function gpio_init
-;	-----------------------------------------
-_gpio_init:
-;	src/main.c: 82: }
-	ret
-;	src/main.c: 84: uint16_t uart_write(const char *str) {
+;	src/main.c: 104: uint16_t uart_write(const char *str) {
 ;	-----------------------------------------
 ;	 function uart_write
 ;	-----------------------------------------
 _uart_write:
 	sub	sp, #3
-;	src/main.c: 86: for(i = 0; i < strlen(str); i++) {
+;	src/main.c: 106: for(i = 0; i < strlen(str); i++) {
 	clr	(0x03, sp)
 00106$:
 	ldw	x, (0x06, sp)
@@ -671,90 +631,103 @@ _uart_write:
 	ld	xl, a
 	cpw	x, (0x01, sp)
 	jrnc	00104$
-;	src/main.c: 87: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
+;	src/main.c: 107: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
 00101$:
 	ld	a, 0x5230
 	jrpl	00101$
-;	src/main.c: 88: UART1_DR = str[i];
+;	src/main.c: 108: UART1_DR = str[i];
 	clrw	x
 	ld	a, (0x03, sp)
 	ld	xl, a
 	addw	x, (0x06, sp)
 	ld	a, (x)
 	ld	0x5231, a
-;	src/main.c: 86: for(i = 0; i < strlen(str); i++) {
+;	src/main.c: 106: for(i = 0; i < strlen(str); i++) {
 	inc	(0x03, sp)
 	jra	00106$
 00104$:
-;	src/main.c: 90: return(i); // Bytes sent
+;	src/main.c: 110: return(i); // Bytes sent
 	ld	a, (0x03, sp)
 	clrw	x
 	ld	xl, a
-;	src/main.c: 91: }
+;	src/main.c: 111: }
 	addw	sp, #3
 	ret
-;	src/main.c: 93: void uart_write_8bits(uint8_t d)
+;	src/main.c: 113: void uart_write_8bits(uint8_t d)
 ;	-----------------------------------------
 ;	 function uart_write_8bits
 ;	-----------------------------------------
 _uart_write_8bits:
-;	src/main.c: 95: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
+;	src/main.c: 115: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
 00101$:
 	ld	a, 0x5230
 	jrpl	00101$
-;	src/main.c: 96: UART1_DR = d;
+;	src/main.c: 116: UART1_DR = d;
 	ldw	x, #0x5231
 	ld	a, (0x03, sp)
 	ld	(x), a
-;	src/main.c: 97: }
+;	src/main.c: 117: }
+	ret
+;	src/main.c: 120: void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len)
+;	-----------------------------------------
+;	 function int_to_hex_str
+;	-----------------------------------------
+_int_to_hex_str:
+	sub	sp, #3
+;	src/main.c: 123: while(hex_str_len)
+	ld	a, (0x0c, sp)
+	ld	(0x03, sp), a
+00101$:
+	tnz	(0x03, sp)
+	jreq	00104$
+;	src/main.c: 125: uint8_t masked_dec = (dec & mask);
+	ld	a, (0x09, sp)
+	and	a, #0x0f
+;	src/main.c: 126: hex_str[hex_str_len - 1] = (masked_dec < 10) ? (masked_dec + '0') : (masked_dec + '7');
+	clrw	x
+	exg	a, xl
+	ld	a, (0x03, sp)
+	exg	a, xl
+	decw	x
+	addw	x, (0x0a, sp)
+	ldw	(0x01, sp), x
+	ld	xl, a
+	cp	a, #0x0a
+	jrnc	00106$
+	ld	a, xl
+	add	a, #0x30
+	jra	00107$
+00106$:
+	ld	a, xl
+	add	a, #0x37
+00107$:
+	ldw	x, (0x01, sp)
+	ld	(x), a
+;	src/main.c: 128: dec >>= 4;
+	ldw	x, (0x08, sp)
+	ldw	y, (0x06, sp)
+	srlw	y
+	rrcw	x
+	srlw	y
+	rrcw	x
+	srlw	y
+	rrcw	x
+	srlw	y
+	rrcw	x
+	ldw	(0x08, sp), x
+	ldw	(0x06, sp), y
+;	src/main.c: 129: hex_str_len--;
+	dec	(0x03, sp)
+	jra	00101$
+00104$:
+;	src/main.c: 131: }
+	addw	sp, #3
 	ret
 	.area CODE
 	.area CONST
 	.area CONST
 ___str_0:
-	.ascii "Configuring SPI..."
-	.db 0x0a
-	.db 0x00
-	.area CODE
-	.area CONST
-___str_1:
-	.ascii "Prepare to write..."
-	.db 0x0a
-	.db 0x00
-	.area CODE
-	.area CONST
-___str_2:
-	.ascii "Writing..."
-	.db 0x0a
-	.db 0x00
-	.area CODE
-	.area CONST
-___str_3:
-	.ascii "Write complete..."
-	.db 0x0a
-	.db 0x00
-	.area CODE
-	.area CONST
-___str_4:
-	.ascii "Reading..."
-	.db 0x0a
-	.db 0x00
-	.area CODE
-	.area CONST
-___str_5:
-	.ascii "Read complete..."
-	.db 0x0a
-	.db 0x00
-	.area CODE
-	.area CONST
-___str_6:
-	.ascii "Comparing..."
-	.db 0x0a
-	.db 0x00
-	.area CODE
-	.area CONST
-___str_7:
-	.ascii "Error count: "
+	.ascii " "
 	.db 0x00
 	.area CODE
 	.area INITIALIZER

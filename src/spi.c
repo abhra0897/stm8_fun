@@ -51,10 +51,14 @@ void spi_busy_wait()
  */
 void spi_write_24bits(uint32_t data)
 {
-    for (int8_t i = 2; i >= 0; i--)
-    {
-        SPI_WRITE8(0xFF & (data >> (i << 4)));   // Explanation: i<<4 = i*8 = 16, 8, 0 for i = 2, 1, 0 respectively. So, we're shifting data and then sending
-    }
+    // for (int8_t i = 2; i >= 0; i--)
+    // {
+    //     SPI_WRITE8(0xFF & (data >> (i << 4)));   // Explanation: i<<4 = i*8 = 16, 8, 0 for i = 2, 1, 0 respectively. So, we're shifting data and then sending
+    // }
+
+    SPI_WRITE8(data >> 16);
+    SPI_WRITE8(data >> 8);
+    SPI_WRITE8(data >> 0);
 }
 
 
@@ -63,7 +67,7 @@ void spi_write_24bits(uint32_t data)
  */
 void spi_write_8bits(uint8_t data)
 {
-    SPI_WRITE8(0xFF & data);
+    SPI_WRITE8(data);
 }
 
 

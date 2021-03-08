@@ -9,11 +9,11 @@ Symbol Table
     .__.H$L.                                                    =  000001 L
   9 _spi_busy_wait                                                 000049 GR
   9 _spi_config                                                    000000 GR
-  9 _spi_cs_active                                                 00009D GR
-  9 _spi_cs_idle                                                   0000A2 GR
-  9 _spi_read_8bits                                                000088 GR
+  9 _spi_cs_active                                                 0000AC GR
+  9 _spi_cs_idle                                                   0000B1 GR
+  9 _spi_read_8bits                                                000091 GR
   9 _spi_write_24bits                                              00004F GR
-  9 _spi_write_8bits                                               00007B GR
+  9 _spi_write_8bits                                               000080 GR
 
 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (STMicroelectronics STM8), page 2.
@@ -30,6 +30,6 @@ Area Table
    6 GSFINAL                                    size      0   flags    0
    7 CONST                                      size      0   flags    0
    8 INITIALIZER                                size      0   flags    0
-   9 CODE                                       size     AC   flags    0
+   9 CODE                                       size     BB   flags    0
    A CABS                                       size      0   flags    8
 

@@ -147,7 +147,14 @@ void flash_write_sreg(uint8_t sreg_byte1, uint8_t sreg_byte2)
  */
 void flash_busy_wait()
 {
-    while (flash_read_sreg(1) & (1 << SREG_BYTE1_BSY));
+    //while (flash_read_sreg(1) & (1 << SREG_BYTE1_BSY));
+    uint8_t sreg_val = 0;
+
+    do
+    {
+        sreg_val = flash_read_sreg(1);
+    } while (sreg_val & (1 << SREG_BYTE1_BSY));
+     
 }
 
 

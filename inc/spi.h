@@ -11,11 +11,13 @@
 #define SPI_WRITE8(d)           do{ \
                                     SPI_DR = (uint8_t)(d); \
                                     while (!(SPI_SR & SPI_SR_TXE)); /* SPI is busy in communication or Tx buffer is not empty*/\
+                                    SPI_DR; /* clearing the data register otherwise it's causing trouble in the next SPI_READ call*/\
                                 }while(0)
 
 #define SPI_READ8(d)            do{ \
-                                    SPI_WRITE8(0x1A);   /*dummy byte to keep the spi clock alive*/ \
+                                    SPI_WRITE8(0xFF);   /*dummy byte to keep the spi clock alive*/ \
                                     while (!(SPI_SR & SPI_SR_RxNE)); \
+                                    d = SPI_DR; \
                                     d = SPI_DR; \
                                 }while(0)
 

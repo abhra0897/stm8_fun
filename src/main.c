@@ -9,7 +9,7 @@
 void uart_init();
 uint16_t uart_write(const char *str);
 void uart_write_8bits(uint8_t d);
-void gpio_init();
+void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len);
 
 
 void main(void)
@@ -22,47 +22,35 @@ void main(void)
     uint8_t buff2[100] = {0};
     for (uint8_t i = 0; i < 100; i++)
     {
-        buff[i] = i;
+        buff[i] = i/* +7+'0' */;
     }
 
-    uart_write("Configuring SPI...\n");
     spi_config();
 
-    uart_write("Prepare to write...\n");
     flash_write_enable();
-    flash_erase_block(0, CMD_4K_BLOCK_ERASE);
+    //flash_erase_block(0, CMD_4K_BLOCK_ERASE);
+    //flash_erase_chip();
     flash_busy_wait();
-    // while (1)
-    // {
-    //     uart_write_8bits(48 + (flash_read_sreg(1) & 1));
-    //     //flash_read_sreg(1);
-    //     //flash_busy_wait();
-    // }
 
     flash_write_enable();
-    uart_write("Writing...\n");
-    flash_write_to_addr(0, buff, 100);
+    flash_write_to_addr(0x012345, buff, 100);
     flash_busy_wait();
-    uart_write("Write complete...\n");
 
-    uart_write("Reading...\n");
-    flash_read_from_addr(0, buff2, 100);
-    uart_write("Read complete...\n");
+    uart_write_8bits(0x99); //indicates start
 
-    uart_write("Comparing...\n");
+
+    flash_read_from_addr(0x012345, buff2, 100);
+
     uint8_t err_cnt = 0;
+    char hex_string[2] = {0};
     for(uint8_t ii = 0; ii < 100; ii++)
     {
+        //int_to_hex_str(buff2[ii], hex_string, 2);
         uart_write_8bits(buff2[ii]);
-        // if (buff[ii] != buff2[ii])
-        // {
-        //     err_cnt++;
-        // }
         
     }
-    uart_write("Error count: ");
     //uart_write_8bits(err_cnt);
-    
+    while(1);
 }
 
 
@@ -76,10 +64,6 @@ void uart_init()
     UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
 }
 
-void gpio_init()
-{
-
-}
 
 uint16_t uart_write(const char *str) {
     char i;
@@ -94,4 +78,18 @@ void uart_write_8bits(uint8_t d)
 {
     while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
         UART1_DR = d;
+}
+
+
+void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len)
+{
+    uint32_t mask = 15; // LSB 4 bits are 15 (0b.........1111) 
+    while(hex_str_len)
+    {
+        uint8_t masked_dec = (dec & mask);
+        hex_str[hex_str_len - 1] = (masked_dec < 10) ? (masked_dec + '0') : (masked_dec + '7');
+        
+        dec >>= 4;
+        hex_str_len--;
+    }
 }
