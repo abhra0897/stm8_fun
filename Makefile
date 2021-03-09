@@ -15,11 +15,13 @@ MCFLAGS = -m$(MCU)
 SRCS = src/main.c
 SRCS += src/flash_driver.c
 SRCS += src/spi.c
+SRCS += src/ws2812_driver.c
 
 ################## Objects ####################
 OBJS = build/main.rel
 OBJS += build/flash_driver.rel
 OBJS += build/spi.rel
+OBJS += build/ws2812_driver.rel
 
 ################## Includes ########################
 INCLS = -I. -Iinc

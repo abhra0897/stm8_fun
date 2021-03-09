@@ -1,0 +1,142 @@
+;--------------------------------------------------------
+; File Created by SDCC : free open source ANSI-C Compiler
+; Version 4.0.0 #11528 (Linux)
+;--------------------------------------------------------
+	.module ws2812_driver
+	.optsdcc -mstm8
+	
+;--------------------------------------------------------
+; Public variables in this module
+;--------------------------------------------------------
+	.globl _ws2812_gpio_config
+	.globl _ws2812_send_8bits
+	.globl _ws2812_send_reset
+;--------------------------------------------------------
+; ram data
+;--------------------------------------------------------
+	.area DATA
+;--------------------------------------------------------
+; ram data
+;--------------------------------------------------------
+	.area INITIALIZED
+;--------------------------------------------------------
+; absolute external ram data
+;--------------------------------------------------------
+	.area DABS (ABS)
+
+; default segment ordering for linker
+	.area HOME
+	.area GSINIT
+	.area GSFINAL
+	.area CONST
+	.area INITIALIZER
+	.area CODE
+
+;--------------------------------------------------------
+; global & static initialisations
+;--------------------------------------------------------
+	.area HOME
+	.area GSINIT
+	.area GSFINAL
+	.area GSINIT
+;--------------------------------------------------------
+; Home
+;--------------------------------------------------------
+	.area HOME
+	.area HOME
+;--------------------------------------------------------
+; code
+;--------------------------------------------------------
+	.area CODE
+;	src/ws2812_driver.c: 4: void ws2812_gpio_config()
+;	-----------------------------------------
+;	 function ws2812_gpio_config
+;	-----------------------------------------
+_ws2812_gpio_config:
+;	src/ws2812_driver.c: 6: PORT(WS2812_PORT, DDR) |= (1 << WS2812_PIN_POS); // WS2812_pin is output
+	bset	20497, #2
+;	src/ws2812_driver.c: 7: PORT(WS2812_PORT, CR1) |= (1 << WS2812_PIN_POS); // Push-pull mode  
+	bset	20498, #2
+;	src/ws2812_driver.c: 9: PORT(WS2812_PORT, ODR) |= (1 << WS2812_PIN_POS); // Low (as ws2812 looks for logic high)
+	bset	20495, #2
+;	src/ws2812_driver.c: 10: }
+	ret
+;	src/ws2812_driver.c: 13: void ws2812_send_8bits(uint8_t d)
+;	-----------------------------------------
+;	 function ws2812_send_8bits
+;	-----------------------------------------
+_ws2812_send_8bits:
+;	src/ws2812_driver.c: 35: uint8_t mask = 0x80;
+	ld	a, #0x80
+;	src/ws2812_driver.c: 36: uint8_t masked_val = d & mask;
+	push	a
+	ld	a, (0x04, sp)
+	and	a, #0x80
+	ld	xl, a
+	pop	a
+;	src/ws2812_driver.c: 37: while (mask) 
+00104$:
+	tnz	a
+	jrne	00124$
+	ret
+00124$:
+;	src/ws2812_driver.c: 53: mask >>= 1;
+	srl	a
+;	src/ws2812_driver.c: 39: if (masked_val) 
+	exg	a, xl
+	tnz	a
+	exg	a, xl
+	jreq	00102$
+;	src/ws2812_driver.c: 49: __asm__("bset " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bset 0x5007, #5")
+	bset	0x500F, #2
+;	src/ws2812_driver.c: 52: nop(); nop(); nop(); nop();
+	nop
+	nop
+	nop
+	nop
+;	src/ws2812_driver.c: 53: mask >>= 1;
+;	src/ws2812_driver.c: 54: masked_val = d & mask;
+	push	a
+	and	a, (0x04, sp)
+	ld	xl, a
+	pop	a
+;	src/ws2812_driver.c: 58: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bres 0x5007, #5")
+	bres	0x500F, #2
+	jra	00104$
+00102$:
+;	src/ws2812_driver.c: 73: __asm__("bset " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bset 0x5007, #5")
+	bset	0x500F, #2
+;	src/ws2812_driver.c: 77: mask >>= 1;
+;	src/ws2812_driver.c: 78: masked_val = d & mask;
+	push	a
+	and	a, (0x04, sp)
+	ld	xl, a
+	pop	a
+;	src/ws2812_driver.c: 81: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bres 0x5007, #5")
+	bres	0x500F, #2
+	jra	00104$
+;	src/ws2812_driver.c: 86: }
+	ret
+;	src/ws2812_driver.c: 89: void ws2812_send_reset()
+;	-----------------------------------------
+;	 function ws2812_send_reset
+;	-----------------------------------------
+_ws2812_send_reset:
+;	src/ws2812_driver.c: 91: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS));
+	bres	0x500F, #2
+;	src/ws2812_driver.c: 94: for(uint16_t wait = 0; wait < 130; wait++);
+	clrw	x
+00103$:
+	ldw	y, x
+	cpw	y, #0x0082
+	jrc	00118$
+	ret
+00118$:
+	incw	x
+	jra	00103$
+;	src/ws2812_driver.c: 95: }
+	ret
+	.area CODE
+	.area CONST
+	.area INITIALIZER
+	.area CABS (ABS)

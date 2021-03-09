@@ -6,12 +6,14 @@
 void spi_config()
 {
     // SPI port setup: MISO is pullup in, MOSI & SCK are push-pull out
-    PORT(SPI_PORT, DDR) |= SPI_CLK | SPI_MOSI; // clock and MOSI
-    PORT(SPI_PORT, CR1) |= SPI_CLK | SPI_MOSI | SPI_MISO;
+    PORT(SPI_PORT, DDR) |= SPI_CLK | SPI_MOSI; // clock and MOSI are Output
+    PORT(SPI_PORT, CR1) |= SPI_CLK | SPI_MOSI | SPI_MISO; //Clk and MOSI are push-pull and MISO is pullup
+    PORT(SPI_PORT, CR2) |= SPI_CLK | SPI_MOSI;  // Clk and MOSI are high speed (10MHz)
 
     // CS/SS (PC4) as output
-    PORT(SPI_PORT, DDR) |= SPI_CS;
-    PORT(SPI_PORT, CR1) |= SPI_CS;
+    PORT(SPI_PORT, DDR) |= SPI_CS; // Output
+    PORT(SPI_PORT, CR1) |= SPI_CS; // Push-pull
+    PORT(SPI_PORT, CR2) |= SPI_CS; // High speed
     PORT(SPI_PORT, ODR) |= SPI_CS; // CS high
 
 

@@ -1,3 +1,6 @@
+#ifndef _SPI_H
+#define _SPI_H
+
 #include "stm8.h"
 #include <stdint.h>
 
@@ -57,3 +60,5 @@ void spi_cs_active();
  * Idle CS by pulling it high
  */
 void spi_cs_idle();
+
+#endif

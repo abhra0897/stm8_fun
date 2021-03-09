@@ -7,32 +7,29 @@ Symbol Table
     .__.ABS.                                                    =  000000 G
     .__.CPU.                                                    =  000000 L
     .__.H$L.                                                    =  000001 L
-  8 ___str_0                                                       000000 R
   5 __interrupt_vect                                               000000 R
   6 __sdcc_gs_init_startup                                         000000 R
   6 __sdcc_init_data                                               000000 R
   5 __sdcc_program_startup                                         000004 R
   3 __start__stack                                                 000000 R
-    _flash_busy_wait                                               ****** GX
-    _flash_erase_chip                                              ****** GX
     _flash_read_from_addr                                          ****** GX
-    _flash_write_enable                                            ****** GX
-    _flash_write_to_addr                                           ****** GX
-  A _int_to_hex_str                                                000332 GR
+  A _int_to_hex_str                                                00033F GR
   A _main                                                          000000 GR
     _spi_config                                                    ****** GX
-    _spi_cs_active                                                 ****** GX
-    _spi_cs_idle                                                   ****** GX
     _strlen                                                        ****** GX
-  A _uart_init                                                     0002E0 GR
-  A _uart_write                                                    0002F5 GR
-  A _uart_write_8bits                                              000326 GR
+  A _uart_init                                                     0002ED GR
+  A _uart_write                                                    000302 GR
+  A _uart_write_8bits                                              000333 GR
+    _ws2812_gpio_config                                            ****** GX
+    _ws2812_send_8bits                                             ****** GX
+    _ws2812_send_reset                                             ****** GX
     l_DATA                                                         ****** GX
     l_INITIALIZER                                                  ****** GX
     s_DATA                                                         ****** GX
     s_GSINIT                                                       ****** GX
     s_INITIALIZED                                                  ****** GX
     s_INITIALIZER                                                  ****** GX
+
 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (STMicroelectronics STM8), page 2.
 Hexadecimal [24-Bits]
@@ -47,8 +44,8 @@ Area Table
    5 HOME                                       size      7   flags    0
    6 GSINIT                                     size     1A   flags    0
    7 GSFINAL                                    size      3   flags    0
-   8 CONST                                      size      2   flags    0
+   8 CONST                                      size      0   flags    0
    9 INITIALIZER                                size      0   flags    0
-   A CODE                                       size    376   flags    0
+   A CODE                                       size    383   flags    0
    B CABS                                       size      0   flags    8
 

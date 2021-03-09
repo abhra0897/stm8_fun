@@ -11,5 +11,6 @@
 build/main.rel
 build/flash_driver.rel
 build/spi.rel
+build/ws2812_driver.rel
 
 -e

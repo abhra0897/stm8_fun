@@ -7,13 +7,9 @@ Symbol Table
     .__.ABS.                                                    =  000000 G
     .__.CPU.                                                    =  000000 L
     .__.H$L.                                                    =  000001 L
-  9 _spi_busy_wait                                                 000055 GR
-  9 _spi_config                                                    000000 GR
-  9 _spi_cs_active                                                 0000B8 GR
-  9 _spi_cs_idle                                                   0000BD GR
-  9 _spi_read_8bits                                                00009D GR
-  9 _spi_write_24bits                                              00005B GR
-  9 _spi_write_8bits                                               00008C GR
+  9 _ws2812_gpio_config                                            000000 GR
+  9 _ws2812_send_8bits                                             00000D GR
+  9 _ws2812_send_reset                                             000043 GR
 
 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (STMicroelectronics STM8), page 2.
@@ -30,6 +26,6 @@ Area Table
    6 GSFINAL                                    size      0   flags    0
    7 CONST                                      size      0   flags    0
    8 INITIALIZER                                size      0   flags    0
-   9 CODE                                       size     C7   flags    0
+   9 CODE                                       size     55   flags    0
    A CABS                                       size      0   flags    8
 

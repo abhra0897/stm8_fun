@@ -10,6 +10,7 @@ Area                                    Addr        Size        Decimal Bytes (A
      FFFFFFFF  s_SSEG                          
      00000000  .__.ABS.                           _strlen
      00000000  l_CABS                          
+     00000000  l_CONST                         
      00000000  l_DABS                          
      00000000  l_DATA                          
      00000000  l_INITIALIZED                   
@@ -21,17 +22,16 @@ Area                                    Addr        Size        Decimal Bytes (A
      00000001  l_SSEG                          
      00000001  s_DATA                          
      00000001  s_INITIALIZED                   
-     00000002  l_CONST                         
      00000003  l_GSFINAL                       
      00000007  l_HOME                          
      0000001A  l_GSINIT                        
-     0000058A  l_CODE                          
+     000005F8  l_CODE                          
      00008000  s_HOME                          
      00008007  s_GSINIT                        
      00008021  s_GSFINAL                       
+     00008024  s_CODE                          
      00008024  s_CONST                         
-     00008026  s_CODE                          
-     00008026  s_INITIALIZER                   
+     00008024  s_INITIALIZER                   
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 2.
 Hexadecimal  [32-Bits]
@@ -74,52 +74,47 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-CONST                               00008024    00000002 =           2. bytes (REL,CON)
+CODE                                00008024    000005F8 =        1528. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
+     00008024  _main                              main
+     00008311  _uart_init                         main
+     00008326  _uart_write                        main
+     00008357  _uart_write_8bits                  main
+     00008363  _int_to_hex_str                    main
+     000083A7  _flash_write_to_addr               flash_driver
+     000083C8  _flash_read_from_addr              flash_driver
+     000083E9  _flash_set_write_addr              flash_driver
+     000083FB  _flash_set_read_addr               flash_driver
+     0000840D  _flash_write_nbytes                flash_driver
+     00008430  _flash_read_nbytes                 flash_driver
+     00008462  _flash_read_sreg                   flash_driver
+     0000849C  _flash_write_sreg                  flash_driver
+     000084B6  _flash_busy_wait                   flash_driver
+     000084C1  _flash_erase_block                 flash_driver
+     000084D9  _flash_write_enable                flash_driver
+     000084E5  _flash_erase_chip                  flash_driver
+     000084F1  _spi_config                        spi
+     00008546  _spi_busy_wait                     spi
+     0000854C  _spi_write_24bits                  spi
+     0000857D  _spi_write_8bits                   spi
+     0000858E  _spi_read_8bits                    spi
+     000085A9  _spi_cs_active                     spi
+     000085AE  _spi_cs_idle                       spi
+     000085B8  _ws2812_gpio_config                ws2812_driver
+     000085C5  _ws2812_send_8bits                 ws2812_driver
+     000085FB  _ws2812_send_reset                 ws2812_driver
+     0000860D  _strlen                            _strlen
+
 ASxxxx Linker V03.00 + NoICE + sdld,  page 7.
-Hexadecimal  [32-Bits]
-
-Area                                    Addr        Size        Decimal Bytes (Attributes)
---------------------------------        ----        ----        ------- ----- ------------
-CODE                                00008026    0000058A =        1418. bytes (REL,CON)
-
-      Value  Global                              Global Defined In Module
-      -----  --------------------------------   ------------------------
-     00008026  _main                              main
-     00008306  _uart_init                         main
-     0000831B  _uart_write                        main
-     0000834C  _uart_write_8bits                  main
-     00008358  _int_to_hex_str                    main
-     0000839C  _flash_write_to_addr               flash_driver
-     000083BD  _flash_read_from_addr              flash_driver
-     000083DE  _flash_set_write_addr              flash_driver
-     000083F0  _flash_set_read_addr               flash_driver
-     00008402  _flash_write_nbytes                flash_driver
-     00008425  _flash_read_nbytes                 flash_driver
-     00008457  _flash_read_sreg                   flash_driver
-     00008491  _flash_write_sreg                  flash_driver
-     000084AB  _flash_busy_wait                   flash_driver
-     000084B6  _flash_erase_block                 flash_driver
-     000084CE  _flash_write_enable                flash_driver
-     000084DA  _flash_erase_chip                  flash_driver
-     000084E6  _spi_config                        spi
-     0000852F  _spi_busy_wait                     spi
-     00008535  _spi_write_24bits                  spi
-     00008566  _spi_write_8bits                   spi
-     00008577  _spi_read_8bits                    spi
-     00008592  _spi_cs_active                     spi
-     00008597  _spi_cs_idle                       spi
-     000085A1  _strlen                            _strlen
-
-ASxxxx Linker V03.00 + NoICE + sdld,  page 8.
 
 Files Linked                              [ module(s) ]
 
 build/main.rel                            [ main ]
 build/flash_driver.rel                    [ flash_driver ]
 build/spi.rel                             [ spi ]
+build/ws2812_driver.rel                   [ ws2812_driver ]
 
 
 Libraries Linked                          [ object file ]
@@ -127,7 +122,7 @@ Libraries Linked                          [ object file ]
 /usr/local/bin/../share/sdcc/lib/stm8/stm8.lib
                                           [ _strlen.rel ]
 
-ASxxxx Linker V03.00 + NoICE + sdld,  page 9.
+ASxxxx Linker V03.00 + NoICE + sdld,  page 8.
 
 User Base Address Definitions
 

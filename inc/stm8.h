@@ -4,8 +4,8 @@
  * Register definitions for STM8S103 (and STM8S003)
  * Still incomplete.
  */
-#ifndef _STH8_H
-#define _STH8_H
+#ifndef _STM8_H
+#define _STM8_H
 
 
 /* Handy macros for GPIO */

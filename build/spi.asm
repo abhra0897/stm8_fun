@@ -57,61 +57,67 @@
 ;	 function spi_config
 ;	-----------------------------------------
 _spi_config:
-;	src/spi.c: 9: PORT(SPI_PORT, DDR) |= SPI_CLK | SPI_MOSI; // clock and MOSI
+;	src/spi.c: 9: PORT(SPI_PORT, DDR) |= SPI_CLK | SPI_MOSI; // clock and MOSI are Output
 	ld	a, 0x500c
 	or	a, #0x60
 	ld	0x500c, a
-;	src/spi.c: 10: PORT(SPI_PORT, CR1) |= SPI_CLK | SPI_MOSI | SPI_MISO;
+;	src/spi.c: 10: PORT(SPI_PORT, CR1) |= SPI_CLK | SPI_MOSI | SPI_MISO; //Clk and MOSI are push-pull and MISO is pullup
 	ld	a, 0x500d
 	or	a, #0xe0
 	ld	0x500d, a
-;	src/spi.c: 13: PORT(SPI_PORT, DDR) |= SPI_CS;
+;	src/spi.c: 11: PORT(SPI_PORT, CR2) |= SPI_CLK | SPI_MOSI;  // Clk and MOSI are high speed (10MHz)
+	ld	a, 0x500e
+	or	a, #0x60
+	ld	0x500e, a
+;	src/spi.c: 14: PORT(SPI_PORT, DDR) |= SPI_CS; // Output
 	bset	20492, #4
-;	src/spi.c: 14: PORT(SPI_PORT, CR1) |= SPI_CS;
+;	src/spi.c: 15: PORT(SPI_PORT, CR1) |= SPI_CS; // Push-pull
 	bset	20493, #4
-;	src/spi.c: 15: PORT(SPI_PORT, ODR) |= SPI_CS; // CS high
+;	src/spi.c: 16: PORT(SPI_PORT, CR2) |= SPI_CS; // High speed
+	bset	20494, #4
+;	src/spi.c: 17: PORT(SPI_PORT, ODR) |= SPI_CS; // CS high
 	bset	20490, #4
-;	src/spi.c: 19: SPI_CR1 = 0;
+;	src/spi.c: 21: SPI_CR1 = 0;
 	mov	0x5200+0, #0x00
-;	src/spi.c: 20: SPI_CR2 = 0;
+;	src/spi.c: 22: SPI_CR2 = 0;
 	mov	0x5201+0, #0x00
-;	src/spi.c: 23: SPI_CR1 &= ~SPI_CR1_LSBFIRST;
+;	src/spi.c: 25: SPI_CR1 &= ~SPI_CR1_LSBFIRST;
 	bres	20992, #7
-;	src/spi.c: 25: SPI_CR1 |= SPI_CR1_BR(0b111);
+;	src/spi.c: 27: SPI_CR1 |= SPI_CR1_BR(0b111);
 	ld	a, 0x5200
 	or	a, #0x38
 	ld	0x5200, a
-;	src/spi.c: 29: SPI_CR1 &= ~SPI_CR1_CPOL;
+;	src/spi.c: 31: SPI_CR1 &= ~SPI_CR1_CPOL;
 	bres	20992, #1
-;	src/spi.c: 31: SPI_CR1 &= ~SPI_CR1_CPHA;
+;	src/spi.c: 33: SPI_CR1 &= ~SPI_CR1_CPHA;
 	bres	20992, #0
-;	src/spi.c: 33: SPI_CR2 |= SPI_CR2_SSM; // bit 1 SSM=1 Software slave management, enabled
+;	src/spi.c: 35: SPI_CR2 |= SPI_CR2_SSM; // bit 1 SSM=1 Software slave management, enabled
 	bset	20993, #1
-;	src/spi.c: 34: SPI_CR2 |= SPI_CR2_SSI; // bit 0 SSI=1 Internal slave select, Master mode
+;	src/spi.c: 36: SPI_CR2 |= SPI_CR2_SSI; // bit 0 SSI=1 Internal slave select, Master mode
 	bset	20993, #0
-;	src/spi.c: 35: SPI_CR1 |= SPI_CR1_MSTR;  // CR1 bit 2 MSTR = 1, Master configuration.
+;	src/spi.c: 37: SPI_CR1 |= SPI_CR1_MSTR;  // CR1 bit 2 MSTR = 1, Master configuration.
 	bset	20992, #2
-;	src/spi.c: 36: SPI_CR1 |= SPI_CR1_SPE; // Enable SPI
+;	src/spi.c: 38: SPI_CR1 |= SPI_CR1_SPE; // Enable SPI
 	bset	20992, #6
-;	src/spi.c: 37: }
+;	src/spi.c: 39: }
 	ret
-;	src/spi.c: 43: void spi_busy_wait()
+;	src/spi.c: 45: void spi_busy_wait()
 ;	-----------------------------------------
 ;	 function spi_busy_wait
 ;	-----------------------------------------
 _spi_busy_wait:
-;	src/spi.c: 45: while (SPI_SR & SPI_SR_BSY);
+;	src/spi.c: 47: while (SPI_SR & SPI_SR_BSY);
 00101$:
 	ld	a, 0x5203
 	jrmi	00101$
-;	src/spi.c: 46: }
+;	src/spi.c: 48: }
 	ret
-;	src/spi.c: 52: void spi_write_24bits(uint32_t data)
+;	src/spi.c: 54: void spi_write_24bits(uint32_t data)
 ;	-----------------------------------------
 ;	 function spi_write_24bits
 ;	-----------------------------------------
 _spi_write_24bits:
-;	src/spi.c: 59: SPI_WRITE8(data >> 16);
+;	src/spi.c: 61: SPI_WRITE8(data >> 16);
 	ldw	x, (0x03, sp)
 	ld	a, xl
 	ld	0x5204, a
@@ -120,7 +126,7 @@ _spi_write_24bits:
 	bcp	a, #0x02
 	jreq	00101$
 	ld	a, 0x5204
-;	src/spi.c: 60: SPI_WRITE8(data >> 8);
+;	src/spi.c: 62: SPI_WRITE8(data >> 8);
 	ldw	x, (0x05, sp)
 	ld	a, xh
 	clrw	x
@@ -130,7 +136,7 @@ _spi_write_24bits:
 	bcp	a, #0x02
 	jreq	00107$
 	ld	a, 0x5204
-;	src/spi.c: 61: SPI_WRITE8(data >> 0);
+;	src/spi.c: 63: SPI_WRITE8(data >> 0);
 	ld	a, (0x06, sp)
 	ld	0x5204, a
 00113$:
@@ -138,14 +144,14 @@ _spi_write_24bits:
 	bcp	a, #0x02
 	jreq	00113$
 	ld	a, 0x5204
-;	src/spi.c: 62: }
+;	src/spi.c: 64: }
 	ret
-;	src/spi.c: 68: void spi_write_8bits(uint8_t data)
+;	src/spi.c: 70: void spi_write_8bits(uint8_t data)
 ;	-----------------------------------------
 ;	 function spi_write_8bits
 ;	-----------------------------------------
 _spi_write_8bits:
-;	src/spi.c: 70: SPI_WRITE8(data);
+;	src/spi.c: 72: SPI_WRITE8(data);
 	ldw	x, #0x5204
 	ld	a, (0x03, sp)
 	ld	(x), a
@@ -154,14 +160,14 @@ _spi_write_8bits:
 	bcp	a, #0x02
 	jreq	00101$
 	ld	a, 0x5204
-;	src/spi.c: 71: }
+;	src/spi.c: 73: }
 	ret
-;	src/spi.c: 77: uint8_t spi_read_8bits()
+;	src/spi.c: 79: uint8_t spi_read_8bits()
 ;	-----------------------------------------
 ;	 function spi_read_8bits
 ;	-----------------------------------------
 _spi_read_8bits:
-;	src/spi.c: 80: SPI_READ8(d);
+;	src/spi.c: 82: SPI_READ8(d);
 	mov	0x5204+0, #0xff
 00101$:
 	ld	a, 0x5203
@@ -174,29 +180,29 @@ _spi_read_8bits:
 	jrnc	00107$
 	ld	a, 0x5204
 	ld	a, 0x5204
-;	src/spi.c: 81: return d;
-;	src/spi.c: 82: }
+;	src/spi.c: 83: return d;
+;	src/spi.c: 84: }
 	ret
-;	src/spi.c: 88: void spi_cs_active()
+;	src/spi.c: 90: void spi_cs_active()
 ;	-----------------------------------------
 ;	 function spi_cs_active
 ;	-----------------------------------------
 _spi_cs_active:
-;	src/spi.c: 90: SPI_CS_ACTIVE();
+;	src/spi.c: 92: SPI_CS_ACTIVE();
 	bres	20490, #4
-;	src/spi.c: 91: }
+;	src/spi.c: 93: }
 	ret
-;	src/spi.c: 97: void spi_cs_idle()
+;	src/spi.c: 99: void spi_cs_idle()
 ;	-----------------------------------------
 ;	 function spi_cs_idle
 ;	-----------------------------------------
 _spi_cs_idle:
-;	src/spi.c: 99: SPI_CS_IDLE();
+;	src/spi.c: 101: SPI_CS_IDLE();
 00101$:
 	ld	a, 0x5203
 	jrmi	00101$
 	bset	20490, #4
-;	src/spi.c: 100: }
+;	src/spi.c: 102: }
 	ret
 	.area CODE
 	.area CONST

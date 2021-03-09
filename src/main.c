@@ -1,10 +1,11 @@
-#include "stm8.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include <string.h>
+#include "stm8.h"
 #include "spi.h"
 #include "flash_driver.h"
+#include "ws2812_driver.h"
 
 void uart_init();
 uint16_t uart_write(const char *str);
@@ -25,30 +26,43 @@ void main(void)
         buff[i] = i/* +7+'0' */;
     }
 
+    ws2812_gpio_config();
     spi_config();
 
-    flash_write_enable();
+    //flash_write_enable();
     //flash_erase_block(0, CMD_4K_BLOCK_ERASE);
     //flash_erase_chip();
-    flash_busy_wait();
+    //flash_busy_wait();
 
-    flash_write_enable();
-    flash_write_to_addr(0x012345, buff, 100);
-    flash_busy_wait();
+    //flash_write_enable();
+    //flash_write_to_addr(0x012345, buff, 100);
+    //flash_busy_wait();
 
     uart_write_8bits(0x99); //indicates start
-
 
     flash_read_from_addr(0x012345, buff2, 100);
 
     uint8_t err_cnt = 0;
     char hex_string[2] = {0};
-    for(uint8_t ii = 0; ii < 100; ii++)
+
+
+    while(1)
     {
-        //int_to_hex_str(buff2[ii], hex_string, 2);
-        uart_write_8bits(buff2[ii]);
-        
+        for(uint8_t ii = 0; ii < 100; ii++)
+        {
+            //int_to_hex_str(buff2[ii], hex_string, 2);
+            uart_write_8bits(buff2[ii]);
+            ws2812_send_8bits(buff2[ii]);
+            ws2812_send_8bits(buff2[ii]);
+            ws2812_send_8bits(buff2[ii]);
+
+            ws2812_send_reset();
+
+            for (uint32_t jj = 0; jj < 32000; jj++);
+        }
     }
+
+
     //uart_write_8bits(err_cnt);
     while(1);
 }
