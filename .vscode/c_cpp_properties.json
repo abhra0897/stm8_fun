@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "intelliSenseMode": "gcc-arm",
+            "includePath": [
+                ".",
+                "inc",
+                "/usr/local/share/sdcc/include"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/local/bin/sdcc",
+            "cStandard": "c11",
+            "cppStandard": "c++14"
+        }
+    ],
+    "version": 4
+}

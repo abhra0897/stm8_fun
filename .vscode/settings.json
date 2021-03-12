@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "string.h": "c",
+        "flash_driver.h": "c",
+        "strings.h": "c",
+        "ws2812_driver.h": "c"
+    }
+}
