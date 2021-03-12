@@ -25,7 +25,7 @@ Area                                    Addr        Size        Decimal Bytes (A
      00000003  l_GSFINAL                       
      00000007  l_HOME                          
      0000001A  l_GSINIT                        
-     000005F8  l_CODE                          
+     000007CE  l_CODE                          
      00008000  s_HOME                          
      00008007  s_GSINIT                        
      00008021  s_GSFINAL                       
@@ -74,39 +74,40 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-CODE                                00008024    000005F8 =        1528. bytes (REL,CON)
+CODE                                00008024    000007CE =        1998. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
      00008024  _main                              main
-     00008311  _uart_init                         main
-     00008326  _uart_write                        main
-     00008357  _uart_write_8bits                  main
-     00008363  _int_to_hex_str                    main
-     000083A7  _flash_write_to_addr               flash_driver
-     000083C8  _flash_read_from_addr              flash_driver
-     000083E9  _flash_set_write_addr              flash_driver
-     000083FB  _flash_set_read_addr               flash_driver
-     0000840D  _flash_write_nbytes                flash_driver
-     00008430  _flash_read_nbytes                 flash_driver
-     00008462  _flash_read_sreg                   flash_driver
-     0000849C  _flash_write_sreg                  flash_driver
-     000084B6  _flash_busy_wait                   flash_driver
-     000084C1  _flash_erase_block                 flash_driver
-     000084D9  _flash_write_enable                flash_driver
-     000084E5  _flash_erase_chip                  flash_driver
-     000084F1  _spi_config                        spi
-     00008546  _spi_busy_wait                     spi
-     0000854C  _spi_write_24bits                  spi
-     0000857D  _spi_write_8bits                   spi
-     0000858E  _spi_read_8bits                    spi
-     000085A9  _spi_cs_active                     spi
-     000085AE  _spi_cs_idle                       spi
-     000085B8  _ws2812_gpio_config                ws2812_driver
-     000085C5  _ws2812_send_8bits                 ws2812_driver
-     000085FB  _ws2812_send_reset                 ws2812_driver
-     0000860D  _strlen                            _strlen
-
+     000083EE  _get_next_color                    main
+     000084CD  _uart_init                         main
+     000084E2  _uart_write                        main
+     00008513  _uart_write_8bits                  main
+     0000851F  _int_to_hex_str                    main
+     00008563  _flash_write_to_addr               flash_driver
+     00008584  _flash_read_from_addr              flash_driver
+     000085A5  _flash_set_write_addr              flash_driver
+     000085B7  _flash_set_read_addr               flash_driver
+     000085C9  _flash_write_nbytes                flash_driver
+     000085EC  _flash_read_nbytes                 flash_driver
+     0000861E  _flash_read_sreg                   flash_driver
+     00008658  _flash_write_sreg                  flash_driver
+     00008672  _flash_busy_wait                   flash_driver
+     0000867D  _flash_erase_block                 flash_driver
+     00008695  _flash_write_enable                flash_driver
+     000086A1  _flash_erase_chip                  flash_driver
+     000086AD  _spi_config                        spi
+     00008702  _spi_busy_wait                     spi
+     00008708  _spi_write_24bits                  spi
+     00008739  _spi_write_8bits                   spi
+     0000874A  _spi_read_8bits                    spi
+     00008765  _spi_cs_active                     spi
+     0000876A  _spi_cs_idle                       spi
+     00008774  _ws2812_gpio_config                ws2812_driver
+     00008785  _ws2812_send_8bits                 ws2812_driver
+     000087BB  _ws2812_send_pixel_24bits          ws2812_driver
+     000087D1  _ws2812_send_latch                 ws2812_driver
+     000087E3  _strlen                            _strlen
 ASxxxx Linker V03.00 + NoICE + sdld,  page 7.
 
 Files Linked                              [ module(s) ]

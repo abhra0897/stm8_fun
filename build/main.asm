@@ -9,12 +9,13 @@
 ; Public variables in this module
 ;--------------------------------------------------------
 	.globl _main
-	.globl _ws2812_send_reset
-	.globl _ws2812_send_8bits
+	.globl _ws2812_send_pixel_24bits
+	.globl _ws2812_send_latch
 	.globl _ws2812_gpio_config
 	.globl _flash_read_from_addr
 	.globl _spi_config
 	.globl _strlen
+	.globl _get_next_color
 	.globl _uart_init
 	.globl _uart_write
 	.globl _uart_write_8bits
@@ -98,11 +99,16 @@ __sdcc_program_startup:
 ;	 function main
 ;	-----------------------------------------
 _main:
-	sub	sp, #203
+	ldw	y, sp
+	subw	y, #150
+	sub	sp, #255
+	sub	sp, #138
 ;	src/main.c: 19: CLK_CKDIVR = 0;
 	mov	0x50c6+0, #0x00
 ;	src/main.c: 20: uart_init();
+	pushw	y
 	call	_uart_init
+	popw	y
 ;	src/main.c: 22: uint8_t buff[100] = {0};
 	clr	(0x01, sp)
 	ldw	x, sp
@@ -505,7 +511,7 @@ _main:
 	clr	(200, x)
 ;	src/main.c: 24: for (uint8_t i = 0; i < 100; i++)
 	clr	a
-00111$:
+00112$:
 	cp	a, #0x64
 	jrnc	00101$
 ;	src/main.c: 26: buff[i] = i/* +7+'0' */;
@@ -519,21 +525,19 @@ _main:
 	ld	(x), a
 ;	src/main.c: 24: for (uint8_t i = 0; i < 100; i++)
 	inc	a
-	jra	00111$
+	jra	00112$
 00101$:
 ;	src/main.c: 29: ws2812_gpio_config();
+	pushw	y
 	call	_ws2812_gpio_config
-;	src/main.c: 30: spi_config();
 	call	_spi_config
-;	src/main.c: 41: uart_write_8bits(0x99); //indicates start
 	push	#0x99
 	call	_uart_write_8bits
 	pop	a
-;	src/main.c: 43: flash_read_from_addr(0x012345, buff2, 100);
 	push	#0x64
 	push	#0x00
 	ldw	x, sp
-	addw	x, #103
+	addw	x, #105
 	pushw	x
 	push	#0x45
 	push	#0x23
@@ -541,98 +545,365 @@ _main:
 	push	#0x00
 	call	_flash_read_from_addr
 	addw	sp, #8
+	popw	y
 ;	src/main.c: 46: char hex_string[2] = {0};
 	clr	(0xc9, sp)
 	ldw	x, sp
-	clr	(202, x)
-;	src/main.c: 51: for(uint8_t ii = 0; ii < 100; ii++)
-00127$:
-	clr	(0xcb, sp)
-00117$:
-	ld	a, (0xcb, sp)
-	cp	a, #0x64
-	jrnc	00127$
-;	src/main.c: 54: uart_write_8bits(buff2[ii]);
-	clrw	x
-	ld	a, (0xcb, sp)
-	ld	xl, a
+	addw	x, #202
+	clr	(x)
+;	src/main.c: 49: uint8_t red = 255, green = 0, blue = 0;
+	ld	a, #0xff
+	ld	(0xcb, sp), a
+	clr	(0xcc, sp)
+	clr	(0xcd, sp)
+;	src/main.c: 50: uint8_t r_temp = red, g_temp = green, b_temp = blue;
+	ld	a, #0xff
+	ld	(0xce, sp), a
+	clr	(0xcf, sp)
+	clr	(0xd0, sp)
+;	src/main.c: 58: for (uint8_t led_cnt = 0; led_cnt < 60; led_cnt++)
+00128$:
+	clr	(0x96, y)
+00115$:
+	ld	a, (0x96, y)
+	cp	a, #0x3c
+	jrnc	00102$
+;	src/main.c: 60: get_next_color(&r_temp, &g_temp, &b_temp, 10);
+	pushw	y
+	push	#0x0a
+	ldw	x, sp
+	addw	x, #211
 	pushw	x
 	ldw	x, sp
-	addw	x, #103
+	addw	x, #212
+	pushw	x
+	ldw	x, sp
+	addw	x, #213
+	pushw	x
+	call	_get_next_color
+	addw	sp, #7
+	popw	y
+;	src/main.c: 61: color_buff[led_cnt][0] = r_temp;
+	ld	a, (0x96, y)
+	ld	xl, a
+	ld	a, #0x03
+	mul	x, a
+	ldw	(0x92, y), x
+	ldw	x, y
+	ldw	x, (0x92, x)
+	pushw	x
+	ldw	x, sp
+	addw	x, #211
 	addw	x, (1, sp)
 	addw	sp, #2
-	ld	a, (x)
+	ld	a, (0xce, sp)
+	ld	(x), a
+;	src/main.c: 62: color_buff[led_cnt][1] = g_temp;
+	ldw	x, y
+	ldw	x, (0x92, x)
 	pushw	x
-	push	a
-	call	_uart_write_8bits
-	pop	a
-	popw	x
-;	src/main.c: 55: ws2812_send_8bits(buff2[ii]);
-	ld	a, (x)
-	pushw	x
-	push	a
-	call	_ws2812_send_8bits
-	pop	a
-	popw	x
-;	src/main.c: 56: ws2812_send_8bits(buff2[ii]);
-	ld	a, (x)
-	pushw	x
-	push	a
-	call	_ws2812_send_8bits
-	pop	a
-	popw	x
-;	src/main.c: 57: ws2812_send_8bits(buff2[ii]);
-	ld	a, (x)
-	push	a
-	call	_ws2812_send_8bits
-	pop	a
-;	src/main.c: 59: ws2812_send_reset();
-	call	_ws2812_send_reset
-;	src/main.c: 61: for (uint32_t jj = 0; jj < 32000; jj++);
-	clrw	y
-	clrw	x
-00114$:
-	cpw	y, #0x7d00
-	ld	a, xl
-	sbc	a, #0x00
-	ld	a, xh
-	sbc	a, #0x00
-	jrnc	00118$
-	incw	y
-	jrne	00114$
+	ldw	x, sp
+	addw	x, #211
+	addw	x, (1, sp)
+	ldw	(0x94, y), x
+	addw	sp, #2
+	ldw	x, y
+	ldw	x, (0x94, x)
 	incw	x
-	jra	00114$
+	ld	a, (0xcf, sp)
+	ld	(x), a
+;	src/main.c: 63: color_buff[led_cnt][2] = b_temp;
+	ldw	x, y
+	ldw	x, (0x94, x)
+	incw	x
+	incw	x
+	ld	a, (0xd0, sp)
+	ld	(x), a
+;	src/main.c: 58: for (uint8_t led_cnt = 0; led_cnt < 60; led_cnt++)
+	inc	(0x96, y)
+	jra	00115$
+00102$:
+;	src/main.c: 66: for (uint8_t led_cnt = 0; led_cnt < 60; led_cnt++)
+	clr	(0x96, y)
 00118$:
-;	src/main.c: 51: for(uint8_t ii = 0; ii < 100; ii++)
-	inc	(0xcb, sp)
-	jra	00117$
-;	src/main.c: 67: while(1);
-;	src/main.c: 68: }
-	addw	sp, #203
+	ld	a, (0x96, y)
+	cp	a, #0x3c
+	jrnc	00103$
+;	src/main.c: 69: ws2812_send_pixel_24bits(color_buff[led_cnt][0], color_buff[led_cnt][1], color_buff[led_cnt][2]);
+	ld	a, (0x96, y)
+	ld	xl, a
+	ld	a, #0x03
+	mul	x, a
+	ldw	(0x94, y), x
+	ldw	x, y
+	ldw	x, (0x94, x)
+	pushw	x
+	ldw	x, sp
+	addw	x, #211
+	addw	x, (1, sp)
+	ldw	(0x92, y), x
+	addw	sp, #2
+	ldw	x, y
+	ldw	x, (0x92, x)
+	ld	a, (0x2, x)
+	ld	(0x94, y), a
+	ldw	x, y
+	ldw	x, (0x92, x)
+	ld	a, (0x1, x)
+	ld	(0x95, y), a
+	ldw	x, y
+	ldw	x, (0x92, x)
+	ld	a, (x)
+	ld	xl, a
+	pushw	y
+	ld	a, (0x94, y)
+	push	a
+	ld	a, (0x95, y)
+	push	a
+	ld	a, xl
+	push	a
+	call	_ws2812_send_pixel_24bits
+	addw	sp, #3
+	popw	y
+;	src/main.c: 66: for (uint8_t led_cnt = 0; led_cnt < 60; led_cnt++)
+	inc	(0x96, y)
+	jra	00118$
+00103$:
+;	src/main.c: 73: ws2812_send_latch();
+	pushw	y
+	call	_ws2812_send_latch
+	push	#0x14
+	ldw	x, sp
+	addw	x, #208
+	pushw	x
+	ldw	x, sp
+	addw	x, #209
+	pushw	x
+	ldw	x, sp
+	addw	x, #210
+	pushw	x
+	call	_get_next_color
+	addw	sp, #7
+	popw	y
+;	src/main.c: 75: r_temp = red, g_temp = green, b_temp = blue;
+	ld	a, (0xcb, sp)
+	ld	(0xce, sp), a
+	ld	a, (0xcc, sp)
+	ld	(0xcf, sp), a
+	ld	a, (0xcd, sp)
+	ld	(0xd0, sp), a
+;	src/main.c: 92: for (uint32_t jj = 0; jj < 10000; jj++);
+	clrw	x
+	clr	(0x94, y)
+	clr	(0x93, y)
+00121$:
+	cpw	x, #0x2710
+	ld	a, (0x94, y)
+	sbc	a, #0x00
+	ld	a, (0x93, y)
+	sbc	a, #0x00
+	jrc	00176$
+	jp	00128$
+00176$:
+	addw	x, #0x0001
+	ld	a, (0x94, y)
+	adc	a, #0x00
+	ld	(0x94, y), a
+	ld	a, (0x93, y)
+	adc	a, #0x00
+	ld	(0x93, y), a
+	jra	00121$
+;	src/main.c: 98: while(1);
+;	src/main.c: 99: }
+	addw	sp, #255
+	addw	sp, #138
 	ret
-;	src/main.c: 71: void uart_init()
+;	src/main.c: 101: void get_next_color(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t step)
+;	-----------------------------------------
+;	 function get_next_color
+;	-----------------------------------------
+_get_next_color:
+	sub	sp, #18
+;	src/main.c: 103: while (step--)
+	ldw	y, (0x19, sp)
+	ldw	(0x01, sp), y
+	ldw	(0x03, sp), y
+	ldw	y, (0x01, sp)
+	ldw	(0x05, sp), y
+	ldw	y, (0x01, sp)
+	ldw	(0x07, sp), y
+	ld	a, (0x1b, sp)
+	ld	(0x12, sp), a
+00130$:
+	ld	a, (0x12, sp)
+	dec	(0x12, sp)
+	tnz	a
+	jrne	00236$
+	jp	00133$
+00236$:
+;	src/main.c: 105: if (*r == 255 && *b == 0 && *g < 255)
+	ldw	y, (0x15, sp)
+	ldw	(0x09, sp), y
+	ldw	x, y
+	ld	a, (x)
+	ld	(0x0b, sp), a
+	ldw	y, (0x17, sp)
+;	src/main.c: 107: else if ( *g == 255 && *b == 0 && *r > 0)
+	ldw	(0x0c, sp), y
+	ldw	x, y
+	ld	a, (x)
+	ld	(0x0e, sp), a
+;	src/main.c: 105: if (*r == 255 && *b == 0 && *g < 255)
+	ld	a, (0x0b, sp)
+	inc	a
+	jrne	00238$
+	ld	a, #0x01
+	ld	(0x0f, sp), a
+	.byte 0xc5
+00238$:
+	clr	(0x0f, sp)
+00239$:
+;	src/main.c: 106: (*g) += 1;
+	ld	a, (0x0e, sp)
+	ld	(0x10, sp), a
+;	src/main.c: 105: if (*r == 255 && *b == 0 && *g < 255)
+	tnz	(0x0f, sp)
+	jreq	00126$
+	ldw	x, (0x01, sp)
+	ld	a, (x)
+	jrne	00126$
+	ld	a, (0x0e, sp)
+	cp	a, #0xff
+	jrnc	00126$
+;	src/main.c: 106: (*g) += 1;
+	ld	a, (0x10, sp)
+	inc	a
+	ldw	x, (0x0c, sp)
+	ld	(x), a
+	jra	00130$
+00126$:
+;	src/main.c: 107: else if ( *g == 255 && *b == 0 && *r > 0)
+	ld	a, (0x0e, sp)
+	inc	a
+	jrne	00244$
+	ld	a, #0x01
+	ld	(0x11, sp), a
+	.byte 0xc5
+00244$:
+	clr	(0x11, sp)
+00245$:
+;	src/main.c: 108: (*r) -= 1;
+	ld	a, (0x0b, sp)
+	ld	yl, a
+;	src/main.c: 107: else if ( *g == 255 && *b == 0 && *r > 0)
+	tnz	(0x11, sp)
+	jreq	00121$
+	ldw	x, (0x03, sp)
+	ld	a, (x)
+	jrne	00121$
+	tnz	(0x0b, sp)
+	jreq	00121$
+;	src/main.c: 108: (*r) -= 1;
+	ld	a, yl
+	dec	a
+	ldw	x, (0x09, sp)
+	ld	(x), a
+	jra	00130$
+00121$:
+;	src/main.c: 109: else if (*r == 0 && *g == 255 && *b < 255)
+	tnz	(0x0b, sp)
+	jrne	00116$
+	tnz	(0x11, sp)
+	jreq	00116$
+	ldw	x, (0x01, sp)
+	ld	a, (x)
+	cp	a, #0xff
+	jrnc	00116$
+;	src/main.c: 110: (*b) += 1;
+	inc	a
+	ldw	x, (0x01, sp)
+	ld	(x), a
+	jra	00130$
+00116$:
+;	src/main.c: 111: else if (*r == 0 && *b == 255 && *g > 0)
+	tnz	(0x0b, sp)
+	jrne	00111$
+	ldw	x, (0x05, sp)
+	ld	a, (x)
+	inc	a
+	jrne	00111$
+	tnz	(0x0e, sp)
+	jreq	00111$
+;	src/main.c: 112: (*g) -= 1;
+	ld	a, (0x10, sp)
+	dec	a
+	ldw	x, (0x0c, sp)
+	ld	(x), a
+	jp	00130$
+00111$:
+;	src/main.c: 113: else if (*g == 0 && *b == 255 && *r < 255)
+	tnz	(0x0e, sp)
+	jrne	00106$
+	ldw	x, (0x07, sp)
+	ld	a, (x)
+	inc	a
+	jrne	00106$
+	ld	a, (0x0b, sp)
+	cp	a, #0xff
+	jrnc	00106$
+;	src/main.c: 114: (*r) += 1;
+	ld	a, yl
+	inc	a
+	ldw	x, (0x09, sp)
+	ld	(x), a
+	jp	00130$
+00106$:
+;	src/main.c: 115: else if (*r == 255 && *g == 0 && *b > 0)
+	tnz	(0x0f, sp)
+	jrne	00262$
+	jp	00130$
+00262$:
+	tnz	(0x0e, sp)
+	jreq	00263$
+	jp	00130$
+00263$:
+	ldw	x, (0x01, sp)
+	ld	a, (x)
+	jrne	00264$
+	jp	00130$
+00264$:
+;	src/main.c: 116: (*b) -= 1;
+	dec	a
+	ldw	x, (0x01, sp)
+	ld	(x), a
+	jp	00130$
+00133$:
+;	src/main.c: 118: }
+	addw	sp, #18
+	ret
+;	src/main.c: 120: void uart_init()
 ;	-----------------------------------------
 ;	 function uart_init
 ;	-----------------------------------------
 _uart_init:
-;	src/main.c: 74: UART1_CR2 |= UART_CR2_TEN; // Transmitter enable
+;	src/main.c: 123: UART1_CR2 |= UART_CR2_TEN; // Transmitter enable
 	bset	21045, #3
-;	src/main.c: 76: UART1_CR3 &= ~(UART_CR3_STOP1 | UART_CR3_STOP2); // 1 stop bit
+;	src/main.c: 125: UART1_CR3 &= ~(UART_CR3_STOP1 | UART_CR3_STOP2); // 1 stop bit
 	ld	a, 0x5236
 	and	a, #0xcf
 	ld	0x5236, a
-;	src/main.c: 78: UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
+;	src/main.c: 127: UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
 	mov	0x5233+0, #0x01
 	mov	0x5232+0, #0x34
-;	src/main.c: 79: }
+;	src/main.c: 128: }
 	ret
-;	src/main.c: 82: uint16_t uart_write(const char *str) {
+;	src/main.c: 131: uint16_t uart_write(const char *str) {
 ;	-----------------------------------------
 ;	 function uart_write
 ;	-----------------------------------------
 _uart_write:
 	sub	sp, #3
-;	src/main.c: 84: for(i = 0; i < strlen(str); i++) {
+;	src/main.c: 133: for(i = 0; i < strlen(str); i++) {
 	clr	(0x03, sp)
 00106$:
 	ldw	x, (0x06, sp)
@@ -645,59 +916,59 @@ _uart_write:
 	ld	xl, a
 	cpw	x, (0x01, sp)
 	jrnc	00104$
-;	src/main.c: 85: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
+;	src/main.c: 134: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
 00101$:
 	ld	a, 0x5230
 	jrpl	00101$
-;	src/main.c: 86: UART1_DR = str[i];
+;	src/main.c: 135: UART1_DR = str[i];
 	clrw	x
 	ld	a, (0x03, sp)
 	ld	xl, a
 	addw	x, (0x06, sp)
 	ld	a, (x)
 	ld	0x5231, a
-;	src/main.c: 84: for(i = 0; i < strlen(str); i++) {
+;	src/main.c: 133: for(i = 0; i < strlen(str); i++) {
 	inc	(0x03, sp)
 	jra	00106$
 00104$:
-;	src/main.c: 88: return(i); // Bytes sent
+;	src/main.c: 137: return(i); // Bytes sent
 	ld	a, (0x03, sp)
 	clrw	x
 	ld	xl, a
-;	src/main.c: 89: }
+;	src/main.c: 138: }
 	addw	sp, #3
 	ret
-;	src/main.c: 91: void uart_write_8bits(uint8_t d)
+;	src/main.c: 140: void uart_write_8bits(uint8_t d)
 ;	-----------------------------------------
 ;	 function uart_write_8bits
 ;	-----------------------------------------
 _uart_write_8bits:
-;	src/main.c: 93: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
+;	src/main.c: 142: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
 00101$:
 	ld	a, 0x5230
 	jrpl	00101$
-;	src/main.c: 94: UART1_DR = d;
+;	src/main.c: 143: UART1_DR = d;
 	ldw	x, #0x5231
 	ld	a, (0x03, sp)
 	ld	(x), a
-;	src/main.c: 95: }
+;	src/main.c: 144: }
 	ret
-;	src/main.c: 98: void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len)
+;	src/main.c: 147: void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len)
 ;	-----------------------------------------
 ;	 function int_to_hex_str
 ;	-----------------------------------------
 _int_to_hex_str:
 	sub	sp, #3
-;	src/main.c: 101: while(hex_str_len)
+;	src/main.c: 150: while(hex_str_len)
 	ld	a, (0x0c, sp)
 	ld	(0x03, sp), a
 00101$:
 	tnz	(0x03, sp)
 	jreq	00104$
-;	src/main.c: 103: uint8_t masked_dec = (dec & mask);
+;	src/main.c: 152: uint8_t masked_dec = (dec & mask);
 	ld	a, (0x09, sp)
 	and	a, #0x0f
-;	src/main.c: 104: hex_str[hex_str_len - 1] = (masked_dec < 10) ? (masked_dec + '0') : (masked_dec + '7');
+;	src/main.c: 153: hex_str[hex_str_len - 1] = (masked_dec < 10) ? (masked_dec + '0') : (masked_dec + '7');
 	clrw	x
 	exg	a, xl
 	ld	a, (0x03, sp)
@@ -717,7 +988,7 @@ _int_to_hex_str:
 00107$:
 	ldw	x, (0x01, sp)
 	ld	(x), a
-;	src/main.c: 106: dec >>= 4;
+;	src/main.c: 155: dec >>= 4;
 	ldw	x, (0x08, sp)
 	ldw	y, (0x06, sp)
 	srlw	y
@@ -730,11 +1001,11 @@ _int_to_hex_str:
 	rrcw	x
 	ldw	(0x08, sp), x
 	ldw	(0x06, sp), y
-;	src/main.c: 107: hex_str_len--;
+;	src/main.c: 156: hex_str_len--;
 	dec	(0x03, sp)
 	jra	00101$
 00104$:
-;	src/main.c: 109: }
+;	src/main.c: 158: }
 	addw	sp, #3
 	ret
 	.area CODE

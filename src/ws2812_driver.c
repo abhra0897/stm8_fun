@@ -5,11 +5,11 @@ void ws2812_gpio_config()
 {
     PORT(WS2812_PORT, DDR) |= (1 << WS2812_PIN_POS); // WS2812_pin is output
     PORT(WS2812_PORT, CR1) |= (1 << WS2812_PIN_POS); // Push-pull mode  
-    //PORT(WS2812_PORT, CR2) |= (1 << WS2812_PIN_POS); // High speed (10MHz)
+    PORT(WS2812_PORT, CR2) |= (1 << WS2812_PIN_POS); // High speed (10MHz)
     PORT(WS2812_PORT, ODR) |= (1 << WS2812_PIN_POS); // Low (as ws2812 looks for logic high)
 }
 
-
+#ifndef USE_INLINE_FUNC
 void ws2812_send_8bits(uint8_t d)
 {
     /*
@@ -40,16 +40,16 @@ void ws2812_send_8bits(uint8_t d)
         {
             /*
             * Bit: 1
-            * High time:  640ns
+            * High time:  590ns
             * Low time:   670ns
-            * Cycle time: 1310ns
+            * Cycle time: 1260ns
             */
 
             // Set pin high
             __asm__("bset " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bset 0x5007, #5")
 
-            // Delay for 640ns (due to nop time + mask calculation time)
-            nop(); nop(); nop(); nop();
+            // Delay for 590ns (due to nop time + mask calculation time)
+            nop(); nop(); nop();
             mask >>= 1;
             masked_val = d & mask;
 
@@ -64,16 +64,16 @@ void ws2812_send_8bits(uint8_t d)
         {
             /*
             * Bit: 0
-            * High time:  390ns
+            * High time:  470ns
             * Low time:   730ns
-            * Cycle time: 1125ns
+            * Cycle time: 1250ns
             */
 
             // Set pin high
             __asm__("bset " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bset 0x5007, #5")
 
-            // Delay for 390ns (due to nop time + mask calculation time)
-            //nop(); nop(); nop(); nop();
+            // Delay for 470ns (due to nop time + mask calculation time)
+            nop();// earlier 0 nops worked fine (390ns), addng one for testing
             mask >>= 1;
             masked_val = d & mask;
 
@@ -86,10 +86,25 @@ void ws2812_send_8bits(uint8_t d)
 }
 
 
-void ws2812_send_reset()
+void ws2812_send_pixel_24bits(uint8_t r, uint8_t g, uint8_t b)
+{
+    #ifdef COLOR_RGB
+        ws2812_send_8bits(r);
+        ws2812_send_8bits(g);
+    #else
+        ws2812_send_8bits(g);
+        ws2812_send_8bits(r);
+    #endif
+    ws2812_send_8bits(b);
+}
+
+#endif
+
+void ws2812_send_latch()
 {
     __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS));
 
     // Delay approx 67.80us (for ws2811) . (For ws2812, try with lower values)
     for(uint16_t wait = 0; wait < 130; wait++);
 }
+

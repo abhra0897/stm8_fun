@@ -11,7 +11,7 @@ void uart_init();
 uint16_t uart_write(const char *str);
 void uart_write_8bits(uint8_t d);
 void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len);
-
+void get_next_color(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t step);
 
 void main(void)
 {
@@ -45,21 +45,37 @@ void main(void)
     uint8_t err_cnt = 0;
     char hex_string[2] = {0};
 
+	// colour value for calculation
+	uint8_t red = 255, green = 0, blue = 0;
+    uint8_t r_temp = red, g_temp = green, b_temp = blue;
+    uint8_t color_buff[60][3];
+
+    
 
     while(1)
     {
-        for(uint8_t ii = 0; ii < 100; ii++)
+
+        for (uint8_t led_cnt = 0; led_cnt < 60; led_cnt++)
         {
-            //int_to_hex_str(buff2[ii], hex_string, 2);
-            uart_write_8bits(buff2[ii]);
-            ws2812_send_8bits(buff2[ii]);
-            ws2812_send_8bits(buff2[ii]);
-            ws2812_send_8bits(buff2[ii]);
-
-            ws2812_send_reset();
-
-            for (uint32_t jj = 0; jj < 32000; jj++);
+            get_next_color(&r_temp, &g_temp, &b_temp, 10);
+            color_buff[led_cnt][0] = r_temp;
+            color_buff[led_cnt][1] = g_temp;
+            color_buff[led_cnt][2] = b_temp;
         }
+
+        for (uint8_t led_cnt = 0; led_cnt < 60; led_cnt++)
+        {
+            //get_next_color(&r_temp, &g_temp, &b_temp, 30);        
+            ws2812_send_pixel_24bits(color_buff[led_cnt][0], color_buff[led_cnt][1], color_buff[led_cnt][2]);
+            //ws2812_send_pixel_24bits(r_temp, g_temp, b_temp);
+            
+        }
+        ws2812_send_latch();
+        get_next_color(&red, &green, &blue, 20);
+        r_temp = red, g_temp = green, b_temp = blue;
+
+        for (uint32_t jj = 0; jj < 10000; jj++);
+    
     }
 
 
@@ -67,6 +83,24 @@ void main(void)
     while(1);
 }
 
+void get_next_color(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t step)
+{
+    while (step--)
+    {
+        if (*r == 255 && *b == 0 && *g < 255)
+            (*g) += 1;
+        else if ( *g == 255 && *b == 0 && *r > 0)
+            (*r) -= 1;
+        else if (*r == 0 && *g == 255 && *b < 255)
+            (*b) += 1;
+        else if (*r == 0 && *b == 255 && *g > 0)
+            (*g) -= 1;
+        else if (*g == 0 && *b == 255 && *r < 255)
+            (*r) += 1;
+        else if (*r == 255 && *g == 0 && *b > 0)
+            (*b) -= 1;
+    }
+}
 
 void uart_init()
 {
