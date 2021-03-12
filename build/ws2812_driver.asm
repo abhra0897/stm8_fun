@@ -60,8 +60,8 @@ _ws2812_gpio_config:
 	bset	20498, #2
 ;	src/ws2812_driver.c: 8: PORT(WS2812_PORT, CR2) |= (1 << WS2812_PIN_POS); // High speed (10MHz)
 	bset	20499, #2
-;	src/ws2812_driver.c: 9: PORT(WS2812_PORT, ODR) |= (1 << WS2812_PIN_POS); // Low (as ws2812 looks for logic high)
-	bset	20495, #2
+;	src/ws2812_driver.c: 9: PORT(WS2812_PORT, ODR) &= ~(1 << WS2812_PIN_POS); // Low (as ws2812 looks for logic high)
+	bres	20495, #2
 ;	src/ws2812_driver.c: 10: }
 	ret
 ;	src/ws2812_driver.c: 13: void ws2812_send_8bits(uint8_t d)
@@ -69,88 +69,88 @@ _ws2812_gpio_config:
 ;	 function ws2812_send_8bits
 ;	-----------------------------------------
 _ws2812_send_8bits:
-;	src/ws2812_driver.c: 35: uint8_t mask = 0x80;
+;	src/ws2812_driver.c: 33: uint8_t mask = 0x80;
 	ld	a, #0x80
-;	src/ws2812_driver.c: 36: uint8_t masked_val = d & mask;
+;	src/ws2812_driver.c: 34: uint8_t masked_val = d & mask;
 	push	a
 	ld	a, (0x04, sp)
 	and	a, #0x80
 	ld	xl, a
 	pop	a
-;	src/ws2812_driver.c: 37: while (mask) 
+;	src/ws2812_driver.c: 35: while (mask) 
 00104$:
 	tnz	a
 	jrne	00124$
 	ret
 00124$:
-;	src/ws2812_driver.c: 53: mask >>= 1;
+;	src/ws2812_driver.c: 51: mask >>= 1;
 	srl	a
-;	src/ws2812_driver.c: 39: if (masked_val) 
+;	src/ws2812_driver.c: 37: if (masked_val) 
 	exg	a, xl
 	tnz	a
 	exg	a, xl
 	jreq	00102$
-;	src/ws2812_driver.c: 49: __asm__("bset " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bset 0x5007, #5")
+;	src/ws2812_driver.c: 47: __asm__("bset " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bset 0x5007, #5")
 	bset	0x500F, #2
-;	src/ws2812_driver.c: 52: nop(); nop(); nop();
+;	src/ws2812_driver.c: 50: nop(); nop(); nop();
 	nop
 	nop
 	nop
-;	src/ws2812_driver.c: 53: mask >>= 1;
-;	src/ws2812_driver.c: 54: masked_val = d & mask;
+;	src/ws2812_driver.c: 51: mask >>= 1;
+;	src/ws2812_driver.c: 52: masked_val = d & mask;
 	push	a
 	and	a, (0x04, sp)
 	ld	xl, a
 	pop	a
-;	src/ws2812_driver.c: 58: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bres 0x5007, #5")
+;	src/ws2812_driver.c: 56: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bres 0x5007, #5")
 	bres	0x500F, #2
 	jra	00104$
 00102$:
-;	src/ws2812_driver.c: 73: __asm__("bset " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bset 0x5007, #5")
+;	src/ws2812_driver.c: 71: __asm__("bset " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bset 0x5007, #5")
 	bset	0x500F, #2
-;	src/ws2812_driver.c: 76: nop();// earlier 0 nops worked fine (390ns), addng one for testing
+;	src/ws2812_driver.c: 74: nop();// earlier 0 nops worked fine (390ns), addng one for testing
 	nop
-;	src/ws2812_driver.c: 77: mask >>= 1;
-;	src/ws2812_driver.c: 78: masked_val = d & mask;
+;	src/ws2812_driver.c: 75: mask >>= 1;
+;	src/ws2812_driver.c: 76: masked_val = d & mask;
 	push	a
 	and	a, (0x04, sp)
 	ld	xl, a
 	pop	a
-;	src/ws2812_driver.c: 81: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bres 0x5007, #5")
+;	src/ws2812_driver.c: 79: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bres 0x5007, #5")
 	bres	0x500F, #2
 	jra	00104$
-;	src/ws2812_driver.c: 86: }
+;	src/ws2812_driver.c: 84: }
 	ret
-;	src/ws2812_driver.c: 89: void ws2812_send_pixel_24bits(uint8_t r, uint8_t g, uint8_t b)
+;	src/ws2812_driver.c: 87: void ws2812_send_pixel_24bits(uint8_t r, uint8_t g, uint8_t b)
 ;	-----------------------------------------
 ;	 function ws2812_send_pixel_24bits
 ;	-----------------------------------------
 _ws2812_send_pixel_24bits:
-;	src/ws2812_driver.c: 95: ws2812_send_8bits(g);
+;	src/ws2812_driver.c: 93: ws2812_send_8bits(g);
 	ld	a, (0x04, sp)
 	push	a
 	call	_ws2812_send_8bits
 	pop	a
-;	src/ws2812_driver.c: 96: ws2812_send_8bits(r);
+;	src/ws2812_driver.c: 94: ws2812_send_8bits(r);
 	ld	a, (0x03, sp)
 	push	a
 	call	_ws2812_send_8bits
 	pop	a
-;	src/ws2812_driver.c: 98: ws2812_send_8bits(b);
+;	src/ws2812_driver.c: 96: ws2812_send_8bits(b);
 	ld	a, (0x05, sp)
 	push	a
 	call	_ws2812_send_8bits
 	pop	a
-;	src/ws2812_driver.c: 99: }
+;	src/ws2812_driver.c: 97: }
 	ret
-;	src/ws2812_driver.c: 103: void ws2812_send_latch()
+;	src/ws2812_driver.c: 101: void ws2812_send_latch()
 ;	-----------------------------------------
 ;	 function ws2812_send_latch
 ;	-----------------------------------------
 _ws2812_send_latch:
-;	src/ws2812_driver.c: 105: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS));
+;	src/ws2812_driver.c: 103: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS));
 	bres	0x500F, #2
-;	src/ws2812_driver.c: 108: for(uint16_t wait = 0; wait < 130; wait++);
+;	src/ws2812_driver.c: 106: for(uint16_t wait = 0; wait < 130; wait++);
 	clrw	x
 00103$:
 	ldw	y, x
@@ -160,7 +160,7 @@ _ws2812_send_latch:
 00118$:
 	incw	x
 	jra	00103$
-;	src/ws2812_driver.c: 109: }
+;	src/ws2812_driver.c: 107: }
 	ret
 	.area CODE
 	.area CONST

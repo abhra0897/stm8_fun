@@ -51,8 +51,6 @@ void static inline ws2812_send_8bits(uint8_t d)
     */
 
 
-   // Note: Below timings are working with ws2811. Not yet tested with ws2812
-
    uint8_t mask = 0x80;
    uint8_t masked_val = d & mask;
     while (mask) 

@@ -6,7 +6,7 @@ void ws2812_gpio_config()
     PORT(WS2812_PORT, DDR) |= (1 << WS2812_PIN_POS); // WS2812_pin is output
     PORT(WS2812_PORT, CR1) |= (1 << WS2812_PIN_POS); // Push-pull mode  
     PORT(WS2812_PORT, CR2) |= (1 << WS2812_PIN_POS); // High speed (10MHz)
-    PORT(WS2812_PORT, ODR) |= (1 << WS2812_PIN_POS); // Low (as ws2812 looks for logic high)
+    PORT(WS2812_PORT, ODR) &= ~(1 << WS2812_PIN_POS); // Low (as ws2812 looks for logic high)
 }
 
 #ifndef USE_INLINE_FUNC
@@ -29,8 +29,6 @@ void ws2812_send_8bits(uint8_t d)
     *  Imp: Some new WS2812B and WS2813 chips require a minimum 250,000ns latch time
     */
 
-
-   // Note: Below timings are working with ws2811. Not yet tested with ws2812
 
    uint8_t mask = 0x80;
    uint8_t masked_val = d & mask;

@@ -692,7 +692,7 @@
       0083B5 6B CF            [ 1]  692 	ld	(0xcf, sp), a
       0083B7 7B CD            [ 1]  693 	ld	a, (0xcd, sp)
       0083B9 6B D0            [ 1]  694 	ld	(0xd0, sp), a
-                                    695 ;	src/main.c: 92: for (uint32_t jj = 0; jj < 10000; jj++);
+                                    695 ;	src/main.c: 77: for (uint32_t jj = 0; jj < 10000; jj++);
       0083BB 5F               [ 1]  696 	clrw	x
       0083BC 90 6F 94         [ 1]  697 	clr	(0x94, y)
       0083BF 90 6F 93         [ 1]  698 	clr	(0x93, y)
@@ -713,18 +713,18 @@
       0083E2 A9 00            [ 1]  713 	adc	a, #0x00
       0083E4 90 E7 93         [ 1]  714 	ld	(0x93, y), a
       0083E7 20 D9            [ 2]  715 	jra	00121$
-                                    716 ;	src/main.c: 98: while(1);
-                                    717 ;	src/main.c: 99: }
+                                    716 ;	src/main.c: 83: while(1);
+                                    717 ;	src/main.c: 84: }
       0083E9 5B FF            [ 2]  718 	addw	sp, #255
       0083EB 5B 8A            [ 2]  719 	addw	sp, #138
       0083ED 81               [ 4]  720 	ret
-                                    721 ;	src/main.c: 101: void get_next_color(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t step)
+                                    721 ;	src/main.c: 86: void get_next_color(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t step)
                                     722 ;	-----------------------------------------
                                     723 ;	 function get_next_color
                                     724 ;	-----------------------------------------
       0083EE                        725 _get_next_color:
       0083EE 52 12            [ 2]  726 	sub	sp, #18
-                                    727 ;	src/main.c: 103: while (step--)
+                                    727 ;	src/main.c: 88: while (step--)
       0083F0 16 19            [ 2]  728 	ldw	y, (0x19, sp)
       0083F2 17 01            [ 2]  729 	ldw	(0x01, sp), y
       0083F4 17 03            [ 2]  730 	ldw	(0x03, sp), y
@@ -741,19 +741,19 @@
       008407 26 03            [ 1]  741 	jrne	00236$
       008409 CC 84 CA         [ 2]  742 	jp	00133$
       00840C                        743 00236$:
-                                    744 ;	src/main.c: 105: if (*r == 255 && *b == 0 && *g < 255)
+                                    744 ;	src/main.c: 90: if (*r == 255 && *b == 0 && *g < 255)
       00840C 16 15            [ 2]  745 	ldw	y, (0x15, sp)
       00840E 17 09            [ 2]  746 	ldw	(0x09, sp), y
       008410 93               [ 1]  747 	ldw	x, y
       008411 F6               [ 1]  748 	ld	a, (x)
       008412 6B 0B            [ 1]  749 	ld	(0x0b, sp), a
       008414 16 17            [ 2]  750 	ldw	y, (0x17, sp)
-                                    751 ;	src/main.c: 107: else if ( *g == 255 && *b == 0 && *r > 0)
+                                    751 ;	src/main.c: 92: else if ( *g == 255 && *b == 0 && *r > 0)
       008416 17 0C            [ 2]  752 	ldw	(0x0c, sp), y
       008418 93               [ 1]  753 	ldw	x, y
       008419 F6               [ 1]  754 	ld	a, (x)
       00841A 6B 0E            [ 1]  755 	ld	(0x0e, sp), a
-                                    756 ;	src/main.c: 105: if (*r == 255 && *b == 0 && *g < 255)
+                                    756 ;	src/main.c: 90: if (*r == 255 && *b == 0 && *g < 255)
       00841C 7B 0B            [ 1]  757 	ld	a, (0x0b, sp)
       00841E 4C               [ 1]  758 	inc	a
       00841F 26 05            [ 1]  759 	jrne	00238$
@@ -763,10 +763,10 @@
       008426                        763 00238$:
       008426 0F 0F            [ 1]  764 	clr	(0x0f, sp)
       008428                        765 00239$:
-                                    766 ;	src/main.c: 106: (*g) += 1;
+                                    766 ;	src/main.c: 91: (*g) += 1;
       008428 7B 0E            [ 1]  767 	ld	a, (0x0e, sp)
       00842A 6B 10            [ 1]  768 	ld	(0x10, sp), a
-                                    769 ;	src/main.c: 105: if (*r == 255 && *b == 0 && *g < 255)
+                                    769 ;	src/main.c: 90: if (*r == 255 && *b == 0 && *g < 255)
       00842C 0D 0F            [ 1]  770 	tnz	(0x0f, sp)
       00842E 27 13            [ 1]  771 	jreq	00126$
       008430 1E 01            [ 2]  772 	ldw	x, (0x01, sp)
@@ -775,14 +775,14 @@
       008435 7B 0E            [ 1]  775 	ld	a, (0x0e, sp)
       008437 A1 FF            [ 1]  776 	cp	a, #0xff
       008439 24 08            [ 1]  777 	jrnc	00126$
-                                    778 ;	src/main.c: 106: (*g) += 1;
+                                    778 ;	src/main.c: 91: (*g) += 1;
       00843B 7B 10            [ 1]  779 	ld	a, (0x10, sp)
       00843D 4C               [ 1]  780 	inc	a
       00843E 1E 0C            [ 2]  781 	ldw	x, (0x0c, sp)
       008440 F7               [ 1]  782 	ld	(x), a
       008441 20 BF            [ 2]  783 	jra	00130$
       008443                        784 00126$:
-                                    785 ;	src/main.c: 107: else if ( *g == 255 && *b == 0 && *r > 0)
+                                    785 ;	src/main.c: 92: else if ( *g == 255 && *b == 0 && *r > 0)
       008443 7B 0E            [ 1]  786 	ld	a, (0x0e, sp)
       008445 4C               [ 1]  787 	inc	a
       008446 26 05            [ 1]  788 	jrne	00244$
@@ -792,10 +792,10 @@
       00844D                        792 00244$:
       00844D 0F 11            [ 1]  793 	clr	(0x11, sp)
       00844F                        794 00245$:
-                                    795 ;	src/main.c: 108: (*r) -= 1;
+                                    795 ;	src/main.c: 93: (*r) -= 1;
       00844F 7B 0B            [ 1]  796 	ld	a, (0x0b, sp)
       008451 90 97            [ 1]  797 	ld	yl, a
-                                    798 ;	src/main.c: 107: else if ( *g == 255 && *b == 0 && *r > 0)
+                                    798 ;	src/main.c: 92: else if ( *g == 255 && *b == 0 && *r > 0)
       008453 0D 11            [ 1]  799 	tnz	(0x11, sp)
       008455 27 11            [ 1]  800 	jreq	00121$
       008457 1E 03            [ 2]  801 	ldw	x, (0x03, sp)
@@ -803,14 +803,14 @@
       00845A 26 0C            [ 1]  803 	jrne	00121$
       00845C 0D 0B            [ 1]  804 	tnz	(0x0b, sp)
       00845E 27 08            [ 1]  805 	jreq	00121$
-                                    806 ;	src/main.c: 108: (*r) -= 1;
+                                    806 ;	src/main.c: 93: (*r) -= 1;
       008460 90 9F            [ 1]  807 	ld	a, yl
       008462 4A               [ 1]  808 	dec	a
       008463 1E 09            [ 2]  809 	ldw	x, (0x09, sp)
       008465 F7               [ 1]  810 	ld	(x), a
       008466 20 9A            [ 2]  811 	jra	00130$
       008468                        812 00121$:
-                                    813 ;	src/main.c: 109: else if (*r == 0 && *g == 255 && *b < 255)
+                                    813 ;	src/main.c: 94: else if (*r == 0 && *g == 255 && *b < 255)
       008468 0D 0B            [ 1]  814 	tnz	(0x0b, sp)
       00846A 26 11            [ 1]  815 	jrne	00116$
       00846C 0D 11            [ 1]  816 	tnz	(0x11, sp)
@@ -819,13 +819,13 @@
       008472 F6               [ 1]  819 	ld	a, (x)
       008473 A1 FF            [ 1]  820 	cp	a, #0xff
       008475 24 06            [ 1]  821 	jrnc	00116$
-                                    822 ;	src/main.c: 110: (*b) += 1;
+                                    822 ;	src/main.c: 95: (*b) += 1;
       008477 4C               [ 1]  823 	inc	a
       008478 1E 01            [ 2]  824 	ldw	x, (0x01, sp)
       00847A F7               [ 1]  825 	ld	(x), a
       00847B 20 85            [ 2]  826 	jra	00130$
       00847D                        827 00116$:
-                                    828 ;	src/main.c: 111: else if (*r == 0 && *b == 255 && *g > 0)
+                                    828 ;	src/main.c: 96: else if (*r == 0 && *b == 255 && *g > 0)
       00847D 0D 0B            [ 1]  829 	tnz	(0x0b, sp)
       00847F 26 13            [ 1]  830 	jrne	00111$
       008481 1E 05            [ 2]  831 	ldw	x, (0x05, sp)
@@ -834,14 +834,14 @@
       008485 26 0D            [ 1]  834 	jrne	00111$
       008487 0D 0E            [ 1]  835 	tnz	(0x0e, sp)
       008489 27 09            [ 1]  836 	jreq	00111$
-                                    837 ;	src/main.c: 112: (*g) -= 1;
+                                    837 ;	src/main.c: 97: (*g) -= 1;
       00848B 7B 10            [ 1]  838 	ld	a, (0x10, sp)
       00848D 4A               [ 1]  839 	dec	a
       00848E 1E 0C            [ 2]  840 	ldw	x, (0x0c, sp)
       008490 F7               [ 1]  841 	ld	(x), a
       008491 CC 84 02         [ 2]  842 	jp	00130$
       008494                        843 00111$:
-                                    844 ;	src/main.c: 113: else if (*g == 0 && *b == 255 && *r < 255)
+                                    844 ;	src/main.c: 98: else if (*g == 0 && *b == 255 && *r < 255)
       008494 0D 0E            [ 1]  845 	tnz	(0x0e, sp)
       008496 26 15            [ 1]  846 	jrne	00106$
       008498 1E 07            [ 2]  847 	ldw	x, (0x07, sp)
@@ -851,14 +851,14 @@
       00849E 7B 0B            [ 1]  851 	ld	a, (0x0b, sp)
       0084A0 A1 FF            [ 1]  852 	cp	a, #0xff
       0084A2 24 09            [ 1]  853 	jrnc	00106$
-                                    854 ;	src/main.c: 114: (*r) += 1;
+                                    854 ;	src/main.c: 99: (*r) += 1;
       0084A4 90 9F            [ 1]  855 	ld	a, yl
       0084A6 4C               [ 1]  856 	inc	a
       0084A7 1E 09            [ 2]  857 	ldw	x, (0x09, sp)
       0084A9 F7               [ 1]  858 	ld	(x), a
       0084AA CC 84 02         [ 2]  859 	jp	00130$
       0084AD                        860 00106$:
-                                    861 ;	src/main.c: 115: else if (*r == 255 && *g == 0 && *b > 0)
+                                    861 ;	src/main.c: 100: else if (*r == 255 && *g == 0 && *b > 0)
       0084AD 0D 0F            [ 1]  862 	tnz	(0x0f, sp)
       0084AF 26 03            [ 1]  863 	jrne	00262$
       0084B1 CC 84 02         [ 2]  864 	jp	00130$
@@ -872,38 +872,38 @@
       0084BE 26 03            [ 1]  872 	jrne	00264$
       0084C0 CC 84 02         [ 2]  873 	jp	00130$
       0084C3                        874 00264$:
-                                    875 ;	src/main.c: 116: (*b) -= 1;
+                                    875 ;	src/main.c: 101: (*b) -= 1;
       0084C3 4A               [ 1]  876 	dec	a
       0084C4 1E 01            [ 2]  877 	ldw	x, (0x01, sp)
       0084C6 F7               [ 1]  878 	ld	(x), a
       0084C7 CC 84 02         [ 2]  879 	jp	00130$
       0084CA                        880 00133$:
-                                    881 ;	src/main.c: 118: }
+                                    881 ;	src/main.c: 103: }
       0084CA 5B 12            [ 2]  882 	addw	sp, #18
       0084CC 81               [ 4]  883 	ret
-                                    884 ;	src/main.c: 120: void uart_init()
+                                    884 ;	src/main.c: 105: void uart_init()
                                     885 ;	-----------------------------------------
                                     886 ;	 function uart_init
                                     887 ;	-----------------------------------------
       0084CD                        888 _uart_init:
-                                    889 ;	src/main.c: 123: UART1_CR2 |= UART_CR2_TEN; // Transmitter enable
+                                    889 ;	src/main.c: 108: UART1_CR2 |= UART_CR2_TEN; // Transmitter enable
       0084CD 72 16 52 35      [ 1]  890 	bset	21045, #3
-                                    891 ;	src/main.c: 125: UART1_CR3 &= ~(UART_CR3_STOP1 | UART_CR3_STOP2); // 1 stop bit
+                                    891 ;	src/main.c: 110: UART1_CR3 &= ~(UART_CR3_STOP1 | UART_CR3_STOP2); // 1 stop bit
       0084D1 C6 52 36         [ 1]  892 	ld	a, 0x5236
       0084D4 A4 CF            [ 1]  893 	and	a, #0xcf
       0084D6 C7 52 36         [ 1]  894 	ld	0x5236, a
-                                    895 ;	src/main.c: 127: UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
+                                    895 ;	src/main.c: 112: UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
       0084D9 35 01 52 33      [ 1]  896 	mov	0x5233+0, #0x01
       0084DD 35 34 52 32      [ 1]  897 	mov	0x5232+0, #0x34
-                                    898 ;	src/main.c: 128: }
+                                    898 ;	src/main.c: 113: }
       0084E1 81               [ 4]  899 	ret
-                                    900 ;	src/main.c: 131: uint16_t uart_write(const char *str) {
+                                    900 ;	src/main.c: 116: uint16_t uart_write(const char *str) {
                                     901 ;	-----------------------------------------
                                     902 ;	 function uart_write
                                     903 ;	-----------------------------------------
       0084E2                        904 _uart_write:
       0084E2 52 03            [ 2]  905 	sub	sp, #3
-                                    906 ;	src/main.c: 133: for(i = 0; i < strlen(str); i++) {
+                                    906 ;	src/main.c: 118: for(i = 0; i < strlen(str); i++) {
       0084E4 0F 03            [ 1]  907 	clr	(0x03, sp)
       0084E6                        908 00106$:
       0084E6 1E 06            [ 2]  909 	ldw	x, (0x06, sp)
@@ -916,59 +916,59 @@
       0084F3 97               [ 1]  916 	ld	xl, a
       0084F4 13 01            [ 2]  917 	cpw	x, (0x01, sp)
       0084F6 24 14            [ 1]  918 	jrnc	00104$
-                                    919 ;	src/main.c: 134: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
+                                    919 ;	src/main.c: 119: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
       0084F8                        920 00101$:
       0084F8 C6 52 30         [ 1]  921 	ld	a, 0x5230
       0084FB 2A FB            [ 1]  922 	jrpl	00101$
-                                    923 ;	src/main.c: 135: UART1_DR = str[i];
+                                    923 ;	src/main.c: 120: UART1_DR = str[i];
       0084FD 5F               [ 1]  924 	clrw	x
       0084FE 7B 03            [ 1]  925 	ld	a, (0x03, sp)
       008500 97               [ 1]  926 	ld	xl, a
       008501 72 FB 06         [ 2]  927 	addw	x, (0x06, sp)
       008504 F6               [ 1]  928 	ld	a, (x)
       008505 C7 52 31         [ 1]  929 	ld	0x5231, a
-                                    930 ;	src/main.c: 133: for(i = 0; i < strlen(str); i++) {
+                                    930 ;	src/main.c: 118: for(i = 0; i < strlen(str); i++) {
       008508 0C 03            [ 1]  931 	inc	(0x03, sp)
       00850A 20 DA            [ 2]  932 	jra	00106$
       00850C                        933 00104$:
-                                    934 ;	src/main.c: 137: return(i); // Bytes sent
+                                    934 ;	src/main.c: 122: return(i); // Bytes sent
       00850C 7B 03            [ 1]  935 	ld	a, (0x03, sp)
       00850E 5F               [ 1]  936 	clrw	x
       00850F 97               [ 1]  937 	ld	xl, a
-                                    938 ;	src/main.c: 138: }
+                                    938 ;	src/main.c: 123: }
       008510 5B 03            [ 2]  939 	addw	sp, #3
       008512 81               [ 4]  940 	ret
-                                    941 ;	src/main.c: 140: void uart_write_8bits(uint8_t d)
+                                    941 ;	src/main.c: 125: void uart_write_8bits(uint8_t d)
                                     942 ;	-----------------------------------------
                                     943 ;	 function uart_write_8bits
                                     944 ;	-----------------------------------------
       008513                        945 _uart_write_8bits:
-                                    946 ;	src/main.c: 142: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
+                                    946 ;	src/main.c: 127: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
       008513                        947 00101$:
       008513 C6 52 30         [ 1]  948 	ld	a, 0x5230
       008516 2A FB            [ 1]  949 	jrpl	00101$
-                                    950 ;	src/main.c: 143: UART1_DR = d;
+                                    950 ;	src/main.c: 128: UART1_DR = d;
       008518 AE 52 31         [ 2]  951 	ldw	x, #0x5231
       00851B 7B 03            [ 1]  952 	ld	a, (0x03, sp)
       00851D F7               [ 1]  953 	ld	(x), a
-                                    954 ;	src/main.c: 144: }
+                                    954 ;	src/main.c: 129: }
       00851E 81               [ 4]  955 	ret
-                                    956 ;	src/main.c: 147: void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len)
+                                    956 ;	src/main.c: 132: void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len)
                                     957 ;	-----------------------------------------
                                     958 ;	 function int_to_hex_str
                                     959 ;	-----------------------------------------
       00851F                        960 _int_to_hex_str:
       00851F 52 03            [ 2]  961 	sub	sp, #3
-                                    962 ;	src/main.c: 150: while(hex_str_len)
+                                    962 ;	src/main.c: 135: while(hex_str_len)
       008521 7B 0C            [ 1]  963 	ld	a, (0x0c, sp)
       008523 6B 03            [ 1]  964 	ld	(0x03, sp), a
       008525                        965 00101$:
       008525 0D 03            [ 1]  966 	tnz	(0x03, sp)
       008527 27 37            [ 1]  967 	jreq	00104$
-                                    968 ;	src/main.c: 152: uint8_t masked_dec = (dec & mask);
+                                    968 ;	src/main.c: 137: uint8_t masked_dec = (dec & mask);
       008529 7B 09            [ 1]  969 	ld	a, (0x09, sp)
       00852B A4 0F            [ 1]  970 	and	a, #0x0f
-                                    971 ;	src/main.c: 153: hex_str[hex_str_len - 1] = (masked_dec < 10) ? (masked_dec + '0') : (masked_dec + '7');
+                                    971 ;	src/main.c: 138: hex_str[hex_str_len - 1] = (masked_dec < 10) ? (masked_dec + '0') : (masked_dec + '7');
       00852D 5F               [ 1]  972 	clrw	x
       00852E 41               [ 1]  973 	exg	a, xl
       00852F 7B 03            [ 1]  974 	ld	a, (0x03, sp)
@@ -988,7 +988,7 @@
       008545                        988 00107$:
       008545 1E 01            [ 2]  989 	ldw	x, (0x01, sp)
       008547 F7               [ 1]  990 	ld	(x), a
-                                    991 ;	src/main.c: 155: dec >>= 4;
+                                    991 ;	src/main.c: 140: dec >>= 4;
       008548 1E 08            [ 2]  992 	ldw	x, (0x08, sp)
       00854A 16 06            [ 2]  993 	ldw	y, (0x06, sp)
       00854C 90 54            [ 2]  994 	srlw	y
@@ -1001,11 +1001,11 @@
       008557 56               [ 2] 1001 	rrcw	x
       008558 1F 08            [ 2] 1002 	ldw	(0x08, sp), x
       00855A 17 06            [ 2] 1003 	ldw	(0x06, sp), y
-                                   1004 ;	src/main.c: 156: hex_str_len--;
+                                   1004 ;	src/main.c: 141: hex_str_len--;
       00855C 0A 03            [ 1] 1005 	dec	(0x03, sp)
       00855E 20 C5            [ 2] 1006 	jra	00101$
       008560                       1007 00104$:
-                                   1008 ;	src/main.c: 158: }
+                                   1008 ;	src/main.c: 143: }
       008560 5B 03            [ 2] 1009 	addw	sp, #3
       008562 81               [ 4] 1010 	ret
                                    1011 	.area CODE

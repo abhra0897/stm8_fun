@@ -692,7 +692,7 @@ _main:
 	ld	(0xcf, sp), a
 	ld	a, (0xcd, sp)
 	ld	(0xd0, sp), a
-;	src/main.c: 92: for (uint32_t jj = 0; jj < 10000; jj++);
+;	src/main.c: 77: for (uint32_t jj = 0; jj < 10000; jj++);
 	clrw	x
 	clr	(0x94, y)
 	clr	(0x93, y)
@@ -713,18 +713,18 @@ _main:
 	adc	a, #0x00
 	ld	(0x93, y), a
 	jra	00121$
-;	src/main.c: 98: while(1);
-;	src/main.c: 99: }
+;	src/main.c: 83: while(1);
+;	src/main.c: 84: }
 	addw	sp, #255
 	addw	sp, #138
 	ret
-;	src/main.c: 101: void get_next_color(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t step)
+;	src/main.c: 86: void get_next_color(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t step)
 ;	-----------------------------------------
 ;	 function get_next_color
 ;	-----------------------------------------
 _get_next_color:
 	sub	sp, #18
-;	src/main.c: 103: while (step--)
+;	src/main.c: 88: while (step--)
 	ldw	y, (0x19, sp)
 	ldw	(0x01, sp), y
 	ldw	(0x03, sp), y
@@ -741,19 +741,19 @@ _get_next_color:
 	jrne	00236$
 	jp	00133$
 00236$:
-;	src/main.c: 105: if (*r == 255 && *b == 0 && *g < 255)
+;	src/main.c: 90: if (*r == 255 && *b == 0 && *g < 255)
 	ldw	y, (0x15, sp)
 	ldw	(0x09, sp), y
 	ldw	x, y
 	ld	a, (x)
 	ld	(0x0b, sp), a
 	ldw	y, (0x17, sp)
-;	src/main.c: 107: else if ( *g == 255 && *b == 0 && *r > 0)
+;	src/main.c: 92: else if ( *g == 255 && *b == 0 && *r > 0)
 	ldw	(0x0c, sp), y
 	ldw	x, y
 	ld	a, (x)
 	ld	(0x0e, sp), a
-;	src/main.c: 105: if (*r == 255 && *b == 0 && *g < 255)
+;	src/main.c: 90: if (*r == 255 && *b == 0 && *g < 255)
 	ld	a, (0x0b, sp)
 	inc	a
 	jrne	00238$
@@ -763,10 +763,10 @@ _get_next_color:
 00238$:
 	clr	(0x0f, sp)
 00239$:
-;	src/main.c: 106: (*g) += 1;
+;	src/main.c: 91: (*g) += 1;
 	ld	a, (0x0e, sp)
 	ld	(0x10, sp), a
-;	src/main.c: 105: if (*r == 255 && *b == 0 && *g < 255)
+;	src/main.c: 90: if (*r == 255 && *b == 0 && *g < 255)
 	tnz	(0x0f, sp)
 	jreq	00126$
 	ldw	x, (0x01, sp)
@@ -775,14 +775,14 @@ _get_next_color:
 	ld	a, (0x0e, sp)
 	cp	a, #0xff
 	jrnc	00126$
-;	src/main.c: 106: (*g) += 1;
+;	src/main.c: 91: (*g) += 1;
 	ld	a, (0x10, sp)
 	inc	a
 	ldw	x, (0x0c, sp)
 	ld	(x), a
 	jra	00130$
 00126$:
-;	src/main.c: 107: else if ( *g == 255 && *b == 0 && *r > 0)
+;	src/main.c: 92: else if ( *g == 255 && *b == 0 && *r > 0)
 	ld	a, (0x0e, sp)
 	inc	a
 	jrne	00244$
@@ -792,10 +792,10 @@ _get_next_color:
 00244$:
 	clr	(0x11, sp)
 00245$:
-;	src/main.c: 108: (*r) -= 1;
+;	src/main.c: 93: (*r) -= 1;
 	ld	a, (0x0b, sp)
 	ld	yl, a
-;	src/main.c: 107: else if ( *g == 255 && *b == 0 && *r > 0)
+;	src/main.c: 92: else if ( *g == 255 && *b == 0 && *r > 0)
 	tnz	(0x11, sp)
 	jreq	00121$
 	ldw	x, (0x03, sp)
@@ -803,14 +803,14 @@ _get_next_color:
 	jrne	00121$
 	tnz	(0x0b, sp)
 	jreq	00121$
-;	src/main.c: 108: (*r) -= 1;
+;	src/main.c: 93: (*r) -= 1;
 	ld	a, yl
 	dec	a
 	ldw	x, (0x09, sp)
 	ld	(x), a
 	jra	00130$
 00121$:
-;	src/main.c: 109: else if (*r == 0 && *g == 255 && *b < 255)
+;	src/main.c: 94: else if (*r == 0 && *g == 255 && *b < 255)
 	tnz	(0x0b, sp)
 	jrne	00116$
 	tnz	(0x11, sp)
@@ -819,13 +819,13 @@ _get_next_color:
 	ld	a, (x)
 	cp	a, #0xff
 	jrnc	00116$
-;	src/main.c: 110: (*b) += 1;
+;	src/main.c: 95: (*b) += 1;
 	inc	a
 	ldw	x, (0x01, sp)
 	ld	(x), a
 	jra	00130$
 00116$:
-;	src/main.c: 111: else if (*r == 0 && *b == 255 && *g > 0)
+;	src/main.c: 96: else if (*r == 0 && *b == 255 && *g > 0)
 	tnz	(0x0b, sp)
 	jrne	00111$
 	ldw	x, (0x05, sp)
@@ -834,14 +834,14 @@ _get_next_color:
 	jrne	00111$
 	tnz	(0x0e, sp)
 	jreq	00111$
-;	src/main.c: 112: (*g) -= 1;
+;	src/main.c: 97: (*g) -= 1;
 	ld	a, (0x10, sp)
 	dec	a
 	ldw	x, (0x0c, sp)
 	ld	(x), a
 	jp	00130$
 00111$:
-;	src/main.c: 113: else if (*g == 0 && *b == 255 && *r < 255)
+;	src/main.c: 98: else if (*g == 0 && *b == 255 && *r < 255)
 	tnz	(0x0e, sp)
 	jrne	00106$
 	ldw	x, (0x07, sp)
@@ -851,14 +851,14 @@ _get_next_color:
 	ld	a, (0x0b, sp)
 	cp	a, #0xff
 	jrnc	00106$
-;	src/main.c: 114: (*r) += 1;
+;	src/main.c: 99: (*r) += 1;
 	ld	a, yl
 	inc	a
 	ldw	x, (0x09, sp)
 	ld	(x), a
 	jp	00130$
 00106$:
-;	src/main.c: 115: else if (*r == 255 && *g == 0 && *b > 0)
+;	src/main.c: 100: else if (*r == 255 && *g == 0 && *b > 0)
 	tnz	(0x0f, sp)
 	jrne	00262$
 	jp	00130$
@@ -872,38 +872,38 @@ _get_next_color:
 	jrne	00264$
 	jp	00130$
 00264$:
-;	src/main.c: 116: (*b) -= 1;
+;	src/main.c: 101: (*b) -= 1;
 	dec	a
 	ldw	x, (0x01, sp)
 	ld	(x), a
 	jp	00130$
 00133$:
-;	src/main.c: 118: }
+;	src/main.c: 103: }
 	addw	sp, #18
 	ret
-;	src/main.c: 120: void uart_init()
+;	src/main.c: 105: void uart_init()
 ;	-----------------------------------------
 ;	 function uart_init
 ;	-----------------------------------------
 _uart_init:
-;	src/main.c: 123: UART1_CR2 |= UART_CR2_TEN; // Transmitter enable
+;	src/main.c: 108: UART1_CR2 |= UART_CR2_TEN; // Transmitter enable
 	bset	21045, #3
-;	src/main.c: 125: UART1_CR3 &= ~(UART_CR3_STOP1 | UART_CR3_STOP2); // 1 stop bit
+;	src/main.c: 110: UART1_CR3 &= ~(UART_CR3_STOP1 | UART_CR3_STOP2); // 1 stop bit
 	ld	a, 0x5236
 	and	a, #0xcf
 	ld	0x5236, a
-;	src/main.c: 127: UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
+;	src/main.c: 112: UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
 	mov	0x5233+0, #0x01
 	mov	0x5232+0, #0x34
-;	src/main.c: 128: }
+;	src/main.c: 113: }
 	ret
-;	src/main.c: 131: uint16_t uart_write(const char *str) {
+;	src/main.c: 116: uint16_t uart_write(const char *str) {
 ;	-----------------------------------------
 ;	 function uart_write
 ;	-----------------------------------------
 _uart_write:
 	sub	sp, #3
-;	src/main.c: 133: for(i = 0; i < strlen(str); i++) {
+;	src/main.c: 118: for(i = 0; i < strlen(str); i++) {
 	clr	(0x03, sp)
 00106$:
 	ldw	x, (0x06, sp)
@@ -916,59 +916,59 @@ _uart_write:
 	ld	xl, a
 	cpw	x, (0x01, sp)
 	jrnc	00104$
-;	src/main.c: 134: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
+;	src/main.c: 119: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
 00101$:
 	ld	a, 0x5230
 	jrpl	00101$
-;	src/main.c: 135: UART1_DR = str[i];
+;	src/main.c: 120: UART1_DR = str[i];
 	clrw	x
 	ld	a, (0x03, sp)
 	ld	xl, a
 	addw	x, (0x06, sp)
 	ld	a, (x)
 	ld	0x5231, a
-;	src/main.c: 133: for(i = 0; i < strlen(str); i++) {
+;	src/main.c: 118: for(i = 0; i < strlen(str); i++) {
 	inc	(0x03, sp)
 	jra	00106$
 00104$:
-;	src/main.c: 137: return(i); // Bytes sent
+;	src/main.c: 122: return(i); // Bytes sent
 	ld	a, (0x03, sp)
 	clrw	x
 	ld	xl, a
-;	src/main.c: 138: }
+;	src/main.c: 123: }
 	addw	sp, #3
 	ret
-;	src/main.c: 140: void uart_write_8bits(uint8_t d)
+;	src/main.c: 125: void uart_write_8bits(uint8_t d)
 ;	-----------------------------------------
 ;	 function uart_write_8bits
 ;	-----------------------------------------
 _uart_write_8bits:
-;	src/main.c: 142: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
+;	src/main.c: 127: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
 00101$:
 	ld	a, 0x5230
 	jrpl	00101$
-;	src/main.c: 143: UART1_DR = d;
+;	src/main.c: 128: UART1_DR = d;
 	ldw	x, #0x5231
 	ld	a, (0x03, sp)
 	ld	(x), a
-;	src/main.c: 144: }
+;	src/main.c: 129: }
 	ret
-;	src/main.c: 147: void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len)
+;	src/main.c: 132: void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len)
 ;	-----------------------------------------
 ;	 function int_to_hex_str
 ;	-----------------------------------------
 _int_to_hex_str:
 	sub	sp, #3
-;	src/main.c: 150: while(hex_str_len)
+;	src/main.c: 135: while(hex_str_len)
 	ld	a, (0x0c, sp)
 	ld	(0x03, sp), a
 00101$:
 	tnz	(0x03, sp)
 	jreq	00104$
-;	src/main.c: 152: uint8_t masked_dec = (dec & mask);
+;	src/main.c: 137: uint8_t masked_dec = (dec & mask);
 	ld	a, (0x09, sp)
 	and	a, #0x0f
-;	src/main.c: 153: hex_str[hex_str_len - 1] = (masked_dec < 10) ? (masked_dec + '0') : (masked_dec + '7');
+;	src/main.c: 138: hex_str[hex_str_len - 1] = (masked_dec < 10) ? (masked_dec + '0') : (masked_dec + '7');
 	clrw	x
 	exg	a, xl
 	ld	a, (0x03, sp)
@@ -988,7 +988,7 @@ _int_to_hex_str:
 00107$:
 	ldw	x, (0x01, sp)
 	ld	(x), a
-;	src/main.c: 155: dec >>= 4;
+;	src/main.c: 140: dec >>= 4;
 	ldw	x, (0x08, sp)
 	ldw	y, (0x06, sp)
 	srlw	y
@@ -1001,11 +1001,11 @@ _int_to_hex_str:
 	rrcw	x
 	ldw	(0x08, sp), x
 	ldw	(0x06, sp), y
-;	src/main.c: 156: hex_str_len--;
+;	src/main.c: 141: hex_str_len--;
 	dec	(0x03, sp)
 	jra	00101$
 00104$:
-;	src/main.c: 158: }
+;	src/main.c: 143: }
 	addw	sp, #3
 	ret
 	.area CODE

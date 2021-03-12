@@ -4,7 +4,19 @@
 
 Trying to make a POV display using stm8 mcu as I'm learning stm8. But for now, just having some fun with it. I may even change my goal and make something else rather than a pov display.
 
-The stm8 is connected to a 4Mbit Adesto spi standard flash where images/animations might be stored. Currently preparing the flash driver. Once it works, I'll decide if ws2812 will be used or normal LEDs with LED driver IC will be used.
+The stm8 is connected to a 4Mbit Adesto spi standard flash where images/animations might be stored. Currently both the flash driver and ws2812 driver work, but yet to decide what type of led will be used finally.
+
+### Setup Guide:
+
+1. Download and install SDCC compiler (https://sourceforge.net/projects/sdcc/files/)
+2. Build stm8flash for uploading binary to stm8 mcu (https://github.com/vdudouyt/stm8flash)
+3. Compile using `make` command (Optionally, clean using `make clean` before this step)
+4. Upload using `make burn` command
+
+### Some Demo:
+
+![demo gif](images/ws2812_demo.gif)
+
 
 ### Done:
 - AT25SF041 flash driver
