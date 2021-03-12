@@ -1,8 +1,14 @@
+## Status: Incomplete
+
 [Proper README will be written later]
 
-Trying to make a POV display using stm8 mcu as I'm learning stm8. 
+Trying to make a POV display using stm8 mcu as I'm learning stm8. But for now, just having some fun with it. I may even change my goal and make something else rather than a pov display.
 
 The stm8 is connected to a 4Mbit Adesto spi standard flash where images/animations might be stored. Currently preparing the flash driver. Once it works, I'll decide if ws2812 will be used or normal LEDs with LED driver IC will be used.
+
+### Done:
+- AT25SF041 flash driver
+- WS2812 / WS2811 driver
 
 ### TO DO:
 - Complete the flash driver and make it work properly [ working here]
@@ -13,3 +19,11 @@ The stm8 is connected to a 4Mbit Adesto spi standard flash where images/animatio
 - Write LED driver and make it work
 - Read from flash and drive LEDs based on that data
 - And lots of other works related to the motor selection/body design/power transfer (slip ring or wireless?) etc..
+
+### Important Resources:
+- WS2812 relaxed timing (https://wp.josh.com/2014/05/13/ws2812-neopixels-are-not-so-finicky-once-you-get-to-know-them/)
+- github gist on WS2812 drv (https://gist.github.com/TG9541/1761fa86b425a0c909b7bd1cc8017c2b)
+- Bit banging on AVR (https://www.instructables.com/Bitbanging-step-by-step-Arduino-control-of-WS2811-/)
+- Another github gist. Helpful but timimng didn't match (https://gist.github.com/stecman/eed14f9a01d50b9e376429959f35493a)
+- Great resource for stm8 development (https://lujji.github.io/blog/bare-metal-programming-stm8/)
+- Good examples based on SDCC compiler (https://github.com/jukkas/stm8-sdcc-examples/blob/master/spi-out-max7219/spi-out-max7219.c)
