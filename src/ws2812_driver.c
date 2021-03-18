@@ -102,7 +102,7 @@ void ws2812_send_latch()
 {
     __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS));
 
-    // Delay approx 67.80us (for ws2811) . (For ws2812, try with lower values)
+    // Delay approx 67.80us
     for(uint16_t wait = 0; wait < 130; wait++);
 }
 

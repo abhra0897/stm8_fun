@@ -53,115 +53,115 @@
                                      53 ;	-----------------------------------------
                                      54 ;	 function ws2812_gpio_config
                                      55 ;	-----------------------------------------
-      008774                         56 _ws2812_gpio_config:
+      008832                         56 _ws2812_gpio_config:
                                      57 ;	src/ws2812_driver.c: 6: PORT(WS2812_PORT, DDR) |= (1 << WS2812_PIN_POS); // WS2812_pin is output
-      008774 72 14 50 11      [ 1]   58 	bset	20497, #2
+      008832 72 14 50 11      [ 1]   58 	bset	20497, #2
                                      59 ;	src/ws2812_driver.c: 7: PORT(WS2812_PORT, CR1) |= (1 << WS2812_PIN_POS); // Push-pull mode  
-      008778 72 14 50 12      [ 1]   60 	bset	20498, #2
+      008836 72 14 50 12      [ 1]   60 	bset	20498, #2
                                      61 ;	src/ws2812_driver.c: 8: PORT(WS2812_PORT, CR2) |= (1 << WS2812_PIN_POS); // High speed (10MHz)
-      00877C 72 14 50 13      [ 1]   62 	bset	20499, #2
+      00883A 72 14 50 13      [ 1]   62 	bset	20499, #2
                                      63 ;	src/ws2812_driver.c: 9: PORT(WS2812_PORT, ODR) &= ~(1 << WS2812_PIN_POS); // Low (as ws2812 looks for logic high)
-      008780 72 15 50 0F      [ 1]   64 	bres	20495, #2
+      00883E 72 15 50 0F      [ 1]   64 	bres	20495, #2
                                      65 ;	src/ws2812_driver.c: 10: }
-      008784 81               [ 4]   66 	ret
+      008842 81               [ 4]   66 	ret
                                      67 ;	src/ws2812_driver.c: 13: void ws2812_send_8bits(uint8_t d)
                                      68 ;	-----------------------------------------
                                      69 ;	 function ws2812_send_8bits
                                      70 ;	-----------------------------------------
-      008785                         71 _ws2812_send_8bits:
+      008843                         71 _ws2812_send_8bits:
                                      72 ;	src/ws2812_driver.c: 33: uint8_t mask = 0x80;
-      008785 A6 80            [ 1]   73 	ld	a, #0x80
+      008843 A6 80            [ 1]   73 	ld	a, #0x80
                                      74 ;	src/ws2812_driver.c: 34: uint8_t masked_val = d & mask;
-      008787 88               [ 1]   75 	push	a
-      008788 7B 04            [ 1]   76 	ld	a, (0x04, sp)
-      00878A A4 80            [ 1]   77 	and	a, #0x80
-      00878C 97               [ 1]   78 	ld	xl, a
-      00878D 84               [ 1]   79 	pop	a
+      008845 88               [ 1]   75 	push	a
+      008846 7B 04            [ 1]   76 	ld	a, (0x04, sp)
+      008848 A4 80            [ 1]   77 	and	a, #0x80
+      00884A 97               [ 1]   78 	ld	xl, a
+      00884B 84               [ 1]   79 	pop	a
                                      80 ;	src/ws2812_driver.c: 35: while (mask) 
-      00878E                         81 00104$:
-      00878E 4D               [ 1]   82 	tnz	a
-      00878F 26 01            [ 1]   83 	jrne	00124$
-      008791 81               [ 4]   84 	ret
-      008792                         85 00124$:
+      00884C                         81 00104$:
+      00884C 4D               [ 1]   82 	tnz	a
+      00884D 26 01            [ 1]   83 	jrne	00124$
+      00884F 81               [ 4]   84 	ret
+      008850                         85 00124$:
                                      86 ;	src/ws2812_driver.c: 51: mask >>= 1;
-      008792 44               [ 1]   87 	srl	a
+      008850 44               [ 1]   87 	srl	a
                                      88 ;	src/ws2812_driver.c: 37: if (masked_val) 
-      008793 41               [ 1]   89 	exg	a, xl
-      008794 4D               [ 1]   90 	tnz	a
-      008795 41               [ 1]   91 	exg	a, xl
-      008796 27 12            [ 1]   92 	jreq	00102$
+      008851 41               [ 1]   89 	exg	a, xl
+      008852 4D               [ 1]   90 	tnz	a
+      008853 41               [ 1]   91 	exg	a, xl
+      008854 27 12            [ 1]   92 	jreq	00102$
                                      93 ;	src/ws2812_driver.c: 47: __asm__("bset " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bset 0x5007, #5")
-      008798 72 14 50 0F      [ 1]   94 	bset	0x500F, #2
+      008856 72 14 50 0F      [ 1]   94 	bset	0x500F, #2
                                      95 ;	src/ws2812_driver.c: 50: nop(); nop(); nop();
-      00879C 9D               [ 1]   96 	nop
-      00879D 9D               [ 1]   97 	nop
-      00879E 9D               [ 1]   98 	nop
+      00885A 9D               [ 1]   96 	nop
+      00885B 9D               [ 1]   97 	nop
+      00885C 9D               [ 1]   98 	nop
                                      99 ;	src/ws2812_driver.c: 51: mask >>= 1;
                                     100 ;	src/ws2812_driver.c: 52: masked_val = d & mask;
-      00879F 88               [ 1]  101 	push	a
-      0087A0 14 04            [ 1]  102 	and	a, (0x04, sp)
-      0087A2 97               [ 1]  103 	ld	xl, a
-      0087A3 84               [ 1]  104 	pop	a
+      00885D 88               [ 1]  101 	push	a
+      00885E 14 04            [ 1]  102 	and	a, (0x04, sp)
+      008860 97               [ 1]  103 	ld	xl, a
+      008861 84               [ 1]  104 	pop	a
                                     105 ;	src/ws2812_driver.c: 56: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bres 0x5007, #5")
-      0087A4 72 15 50 0F      [ 1]  106 	bres	0x500F, #2
-      0087A8 20 E4            [ 2]  107 	jra	00104$
-      0087AA                        108 00102$:
+      008862 72 15 50 0F      [ 1]  106 	bres	0x500F, #2
+      008866 20 E4            [ 2]  107 	jra	00104$
+      008868                        108 00102$:
                                     109 ;	src/ws2812_driver.c: 71: __asm__("bset " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bset 0x5007, #5")
-      0087AA 72 14 50 0F      [ 1]  110 	bset	0x500F, #2
+      008868 72 14 50 0F      [ 1]  110 	bset	0x500F, #2
                                     111 ;	src/ws2812_driver.c: 74: nop();// earlier 0 nops worked fine (390ns), addng one for testing
-      0087AE 9D               [ 1]  112 	nop
+      00886C 9D               [ 1]  112 	nop
                                     113 ;	src/ws2812_driver.c: 75: mask >>= 1;
                                     114 ;	src/ws2812_driver.c: 76: masked_val = d & mask;
-      0087AF 88               [ 1]  115 	push	a
-      0087B0 14 04            [ 1]  116 	and	a, (0x04, sp)
-      0087B2 97               [ 1]  117 	ld	xl, a
-      0087B3 84               [ 1]  118 	pop	a
+      00886D 88               [ 1]  115 	push	a
+      00886E 14 04            [ 1]  116 	and	a, (0x04, sp)
+      008870 97               [ 1]  117 	ld	xl, a
+      008871 84               [ 1]  118 	pop	a
                                     119 ;	src/ws2812_driver.c: 79: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS)); // __asm__("bres 0x5007, #5")
-      0087B4 72 15 50 0F      [ 1]  120 	bres	0x500F, #2
-      0087B8 20 D4            [ 2]  121 	jra	00104$
+      008872 72 15 50 0F      [ 1]  120 	bres	0x500F, #2
+      008876 20 D4            [ 2]  121 	jra	00104$
                                     122 ;	src/ws2812_driver.c: 84: }
-      0087BA 81               [ 4]  123 	ret
+      008878 81               [ 4]  123 	ret
                                     124 ;	src/ws2812_driver.c: 87: void ws2812_send_pixel_24bits(uint8_t r, uint8_t g, uint8_t b)
                                     125 ;	-----------------------------------------
                                     126 ;	 function ws2812_send_pixel_24bits
                                     127 ;	-----------------------------------------
-      0087BB                        128 _ws2812_send_pixel_24bits:
+      008879                        128 _ws2812_send_pixel_24bits:
                                     129 ;	src/ws2812_driver.c: 93: ws2812_send_8bits(g);
-      0087BB 7B 04            [ 1]  130 	ld	a, (0x04, sp)
-      0087BD 88               [ 1]  131 	push	a
-      0087BE CD 87 85         [ 4]  132 	call	_ws2812_send_8bits
-      0087C1 84               [ 1]  133 	pop	a
+      008879 7B 04            [ 1]  130 	ld	a, (0x04, sp)
+      00887B 88               [ 1]  131 	push	a
+      00887C CD 88 43         [ 4]  132 	call	_ws2812_send_8bits
+      00887F 84               [ 1]  133 	pop	a
                                     134 ;	src/ws2812_driver.c: 94: ws2812_send_8bits(r);
-      0087C2 7B 03            [ 1]  135 	ld	a, (0x03, sp)
-      0087C4 88               [ 1]  136 	push	a
-      0087C5 CD 87 85         [ 4]  137 	call	_ws2812_send_8bits
-      0087C8 84               [ 1]  138 	pop	a
+      008880 7B 03            [ 1]  135 	ld	a, (0x03, sp)
+      008882 88               [ 1]  136 	push	a
+      008883 CD 88 43         [ 4]  137 	call	_ws2812_send_8bits
+      008886 84               [ 1]  138 	pop	a
                                     139 ;	src/ws2812_driver.c: 96: ws2812_send_8bits(b);
-      0087C9 7B 05            [ 1]  140 	ld	a, (0x05, sp)
-      0087CB 88               [ 1]  141 	push	a
-      0087CC CD 87 85         [ 4]  142 	call	_ws2812_send_8bits
-      0087CF 84               [ 1]  143 	pop	a
+      008887 7B 05            [ 1]  140 	ld	a, (0x05, sp)
+      008889 88               [ 1]  141 	push	a
+      00888A CD 88 43         [ 4]  142 	call	_ws2812_send_8bits
+      00888D 84               [ 1]  143 	pop	a
                                     144 ;	src/ws2812_driver.c: 97: }
-      0087D0 81               [ 4]  145 	ret
+      00888E 81               [ 4]  145 	ret
                                     146 ;	src/ws2812_driver.c: 101: void ws2812_send_latch()
                                     147 ;	-----------------------------------------
                                     148 ;	 function ws2812_send_latch
                                     149 ;	-----------------------------------------
-      0087D1                        150 _ws2812_send_latch:
+      00888F                        150 _ws2812_send_latch:
                                     151 ;	src/ws2812_driver.c: 103: __asm__("bres " XSTR(WS2812_ODR_ADDR) ", #" XSTR(WS2812_PIN_POS));
-      0087D1 72 15 50 0F      [ 1]  152 	bres	0x500F, #2
+      00888F 72 15 50 0F      [ 1]  152 	bres	0x500F, #2
                                     153 ;	src/ws2812_driver.c: 106: for(uint16_t wait = 0; wait < 130; wait++);
-      0087D5 5F               [ 1]  154 	clrw	x
-      0087D6                        155 00103$:
-      0087D6 90 93            [ 1]  156 	ldw	y, x
-      0087D8 90 A3 00 82      [ 2]  157 	cpw	y, #0x0082
-      0087DC 25 01            [ 1]  158 	jrc	00118$
-      0087DE 81               [ 4]  159 	ret
-      0087DF                        160 00118$:
-      0087DF 5C               [ 1]  161 	incw	x
-      0087E0 20 F4            [ 2]  162 	jra	00103$
+      008893 5F               [ 1]  154 	clrw	x
+      008894                        155 00103$:
+      008894 90 93            [ 1]  156 	ldw	y, x
+      008896 90 A3 00 82      [ 2]  157 	cpw	y, #0x0082
+      00889A 25 01            [ 1]  158 	jrc	00118$
+      00889C 81               [ 4]  159 	ret
+      00889D                        160 00118$:
+      00889D 5C               [ 1]  161 	incw	x
+      00889E 20 F4            [ 2]  162 	jra	00103$
                                     163 ;	src/ws2812_driver.c: 107: }
-      0087E2 81               [ 4]  164 	ret
+      0088A0 81               [ 4]  164 	ret
                                     165 	.area CODE
                                     166 	.area CONST
                                     167 	.area INITIALIZER

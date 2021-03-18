@@ -94,27 +94,18 @@ __sdcc_program_startup:
 ; code
 ;--------------------------------------------------------
 	.area CODE
-;	src/main.c: 16: void main(void)
+;	src/main.c: 47: void main(void)
 ;	-----------------------------------------
 ;	 function main
 ;	-----------------------------------------
 _main:
-	ldw	y, sp
-	subw	y, #150
-	sub	sp, #255
-	sub	sp, #138
-;	src/main.c: 19: CLK_CKDIVR = 0;
+	sub	sp, #238
+;	src/main.c: 50: CLK_CKDIVR = 0;
 	mov	0x50c6+0, #0x00
-;	src/main.c: 20: uart_init();
-	pushw	y
+;	src/main.c: 51: uart_init();
 	call	_uart_init
-	popw	y
-;	src/main.c: 22: uint8_t buff[100] = {0};
-	clr	(0x01, sp)
-	ldw	x, sp
-	clr	(2, x)
-	ldw	x, sp
-	clr	(3, x)
+;	src/main.c: 53: uint8_t buff[100] = {0};
+	clr	(0x03, sp)
 	ldw	x, sp
 	clr	(4, x)
 	ldw	x, sp
@@ -309,12 +300,12 @@ _main:
 	clr	(99, x)
 	ldw	x, sp
 	clr	(100, x)
-;	src/main.c: 23: uint8_t buff2[100] = {0};
-	clr	(0x65, sp)
+	ldw	x, sp
+	clr	(101, x)
 	ldw	x, sp
 	clr	(102, x)
-	ldw	x, sp
-	clr	(103, x)
+;	src/main.c: 54: uint8_t buff2[100] = {0};
+	clr	(0x67, sp)
 	ldw	x, sp
 	clr	(104, x)
 	ldw	x, sp
@@ -509,31 +500,37 @@ _main:
 	clr	(199, x)
 	ldw	x, sp
 	clr	(200, x)
-;	src/main.c: 24: for (uint8_t i = 0; i < 100; i++)
+	ldw	x, sp
+	clr	(201, x)
+	ldw	x, sp
+	clr	(202, x)
+;	src/main.c: 55: for (uint8_t i = 0; i < 100; i++)
 	clr	a
 00112$:
 	cp	a, #0x64
 	jrnc	00101$
-;	src/main.c: 26: buff[i] = i/* +7+'0' */;
+;	src/main.c: 57: buff[i] = i/* +7+'0' */;
 	ldw	x, sp
-	incw	x
+	addw	x, #3
 	pushw	x
 	clrw	x
 	ld	xl, a
 	addw	x, (1, sp)
 	addw	sp, #2
 	ld	(x), a
-;	src/main.c: 24: for (uint8_t i = 0; i < 100; i++)
+;	src/main.c: 55: for (uint8_t i = 0; i < 100; i++)
 	inc	a
 	jra	00112$
 00101$:
-;	src/main.c: 29: ws2812_gpio_config();
-	pushw	y
+;	src/main.c: 60: ws2812_gpio_config();
 	call	_ws2812_gpio_config
+;	src/main.c: 61: spi_config();
 	call	_spi_config
+;	src/main.c: 72: uart_write_8bits(0x99); //indicates start
 	push	#0x99
 	call	_uart_write_8bits
 	pop	a
+;	src/main.c: 74: flash_read_from_addr(0x012345, buff2, 100);
 	push	#0x64
 	push	#0x00
 	ldw	x, sp
@@ -545,32 +542,30 @@ _main:
 	push	#0x00
 	call	_flash_read_from_addr
 	addw	sp, #8
-	popw	y
-;	src/main.c: 46: char hex_string[2] = {0};
-	clr	(0xc9, sp)
+;	src/main.c: 77: char hex_string[2] = {0};
+	clr	(0xcb, sp)
 	ldw	x, sp
-	addw	x, #202
+	addw	x, #204
 	clr	(x)
-;	src/main.c: 49: uint8_t red = 255, green = 0, blue = 0;
+;	src/main.c: 80: uint8_t red = 255, green = 0, blue = 0;
 	ld	a, #0xff
-	ld	(0xcb, sp), a
-	clr	(0xcc, sp)
-	clr	(0xcd, sp)
-;	src/main.c: 50: uint8_t r_temp = red, g_temp = green, b_temp = blue;
-	ld	a, #0xff
-	ld	(0xce, sp), a
+	ld	(0xcd, sp), a
+	clr	(0xce, sp)
 	clr	(0xcf, sp)
-	clr	(0xd0, sp)
-;	src/main.c: 58: for (uint8_t led_cnt = 0; led_cnt < 60; led_cnt++)
+;	src/main.c: 81: uint8_t r_temp = red, g_temp = green, b_temp = blue;
+	ld	a, #0xff
+	ld	(0xd0, sp), a
+	clr	(0xd1, sp)
+	clr	(0xd2, sp)
+;	src/main.c: 89: for (uint8_t led_cnt = 0; led_cnt < LED_COUNT; led_cnt++)
 00128$:
-	clr	(0x96, y)
+	clr	(0xee, sp)
 00115$:
-	ld	a, (0x96, y)
-	cp	a, #0x3c
+	ld	a, (0xee, sp)
+	cp	a, #0x08
 	jrnc	00102$
-;	src/main.c: 60: get_next_color(&r_temp, &g_temp, &b_temp, 10);
-	pushw	y
-	push	#0x0a
+;	src/main.c: 91: get_next_color(&r_temp, &g_temp, &b_temp, 100);
+	push	#0x64
 	ldw	x, sp
 	addw	x, #211
 	pushw	x
@@ -582,97 +577,87 @@ _main:
 	pushw	x
 	call	_get_next_color
 	addw	sp, #7
-	popw	y
-;	src/main.c: 61: color_buff[led_cnt][0] = r_temp;
-	ld	a, (0x96, y)
+;	src/main.c: 92: color_buff[led_cnt][0] = CIE_CORRECTION[r_temp];
+	ld	a, (0xee, sp)
 	ld	xl, a
 	ld	a, #0x03
 	mul	x, a
-	ldw	(0x92, y), x
-	ldw	x, y
-	ldw	x, (0x92, x)
-	pushw	x
-	ldw	x, sp
-	addw	x, #211
-	addw	x, (1, sp)
-	addw	sp, #2
-	ld	a, (0xce, sp)
-	ld	(x), a
-;	src/main.c: 62: color_buff[led_cnt][1] = g_temp;
-	ldw	x, y
-	ldw	x, (0x92, x)
-	pushw	x
-	ldw	x, sp
-	addw	x, #211
-	addw	x, (1, sp)
-	ldw	(0x94, y), x
-	addw	sp, #2
-	ldw	x, y
-	ldw	x, (0x94, x)
-	incw	x
-	ld	a, (0xcf, sp)
-	ld	(x), a
-;	src/main.c: 63: color_buff[led_cnt][2] = b_temp;
-	ldw	x, y
-	ldw	x, (0x94, x)
-	incw	x
-	incw	x
+	ldw	(0xec, sp), x
+	ldw	y, sp
+	addw	y, #211
+	addw	y, (0xec, sp)
+	clrw	x
 	ld	a, (0xd0, sp)
+	ld	xl, a
+	addw	x, #(_CIE_CORRECTION + 0)
+	ld	a, (x)
+	ld	(y), a
+;	src/main.c: 93: color_buff[led_cnt][1] = CIE_CORRECTION[g_temp];
+	ldw	y, sp
+	addw	y, #211
+	addw	y, (0xec, sp)
+	ldw	x, y
+	incw	x
+	ldw	(0xec, sp), x
+	clrw	x
+	ld	a, (0xd1, sp)
+	ld	xl, a
+	addw	x, #(_CIE_CORRECTION + 0)
+	ld	a, (x)
+	ldw	x, (0xec, sp)
 	ld	(x), a
-;	src/main.c: 58: for (uint8_t led_cnt = 0; led_cnt < 60; led_cnt++)
-	inc	(0x96, y)
+;	src/main.c: 94: color_buff[led_cnt][2] = CIE_CORRECTION[b_temp];
+	addw	y, #0x0002
+	clrw	x
+	ld	a, (0xd2, sp)
+	ld	xl, a
+	addw	x, #(_CIE_CORRECTION + 0)
+	ld	a, (x)
+	ld	(y), a
+;	src/main.c: 89: for (uint8_t led_cnt = 0; led_cnt < LED_COUNT; led_cnt++)
+	inc	(0xee, sp)
 	jra	00115$
 00102$:
-;	src/main.c: 66: for (uint8_t led_cnt = 0; led_cnt < 60; led_cnt++)
-	clr	(0x96, y)
+;	src/main.c: 101: for (uint8_t led_cnt = 0; led_cnt < LED_COUNT; led_cnt++)
+	clr	(0xee, sp)
 00118$:
-	ld	a, (0x96, y)
-	cp	a, #0x3c
+	ld	a, (0xee, sp)
+	cp	a, #0x08
 	jrnc	00103$
-;	src/main.c: 69: ws2812_send_pixel_24bits(color_buff[led_cnt][0], color_buff[led_cnt][1], color_buff[led_cnt][2]);
-	ld	a, (0x96, y)
+;	src/main.c: 104: ws2812_send_pixel_24bits(color_buff[led_cnt][0], color_buff[led_cnt][1], color_buff[led_cnt][2]);
+	ld	a, (0xee, sp)
 	ld	xl, a
 	ld	a, #0x03
 	mul	x, a
-	ldw	(0x94, y), x
-	ldw	x, y
-	ldw	x, (0x94, x)
-	pushw	x
+	ldw	(0x01, sp), x
 	ldw	x, sp
 	addw	x, #211
-	addw	x, (1, sp)
-	ldw	(0x92, y), x
-	addw	sp, #2
-	ldw	x, y
-	ldw	x, (0x92, x)
+	addw	x, (0x01, sp)
+	ldw	(0xeb, sp), x
 	ld	a, (0x2, x)
-	ld	(0x94, y), a
-	ldw	x, y
-	ldw	x, (0x92, x)
+	ld	(0xed, sp), a
+	ldw	x, (0xeb, sp)
 	ld	a, (0x1, x)
-	ld	(0x95, y), a
-	ldw	x, y
-	ldw	x, (0x92, x)
-	ld	a, (x)
 	ld	xl, a
-	pushw	y
-	ld	a, (0x94, y)
-	push	a
-	ld	a, (0x95, y)
+	ldw	y, (0xeb, sp)
+	ld	a, (y)
+	ld	xh, a
+	ld	a, (0xed, sp)
 	push	a
 	ld	a, xl
 	push	a
+	ld	a, xh
+	push	a
 	call	_ws2812_send_pixel_24bits
 	addw	sp, #3
-	popw	y
-;	src/main.c: 66: for (uint8_t led_cnt = 0; led_cnt < 60; led_cnt++)
-	inc	(0x96, y)
+;	src/main.c: 101: for (uint8_t led_cnt = 0; led_cnt < LED_COUNT; led_cnt++)
+	inc	(0xee, sp)
 	jra	00118$
 00103$:
-;	src/main.c: 73: ws2812_send_latch();
-	pushw	y
+;	src/main.c: 108: ws2812_send_latch();
 	call	_ws2812_send_latch
-	push	#0x14
+;	src/main.c: 109: get_next_color(&red, &green, &blue, 10);
+	push	#0x0a
 	ldw	x, sp
 	addw	x, #208
 	pushw	x
@@ -684,47 +669,40 @@ _main:
 	pushw	x
 	call	_get_next_color
 	addw	sp, #7
-	popw	y
-;	src/main.c: 75: r_temp = red, g_temp = green, b_temp = blue;
-	ld	a, (0xcb, sp)
-	ld	(0xce, sp), a
-	ld	a, (0xcc, sp)
-	ld	(0xcf, sp), a
+;	src/main.c: 110: r_temp = red, g_temp = green, b_temp = blue;
 	ld	a, (0xcd, sp)
 	ld	(0xd0, sp), a
-;	src/main.c: 77: for (uint32_t jj = 0; jj < 10000; jj++);
+	ld	a, (0xce, sp)
+	ld	(0xd1, sp), a
+	ld	a, (0xcf, sp)
+	ld	(0xd2, sp), a
+;	src/main.c: 112: for (uint32_t jj = 0; jj < 10000; jj++);
+	clrw	y
 	clrw	x
-	clr	(0x94, y)
-	clr	(0x93, y)
 00121$:
-	cpw	x, #0x2710
-	ld	a, (0x94, y)
+	cpw	y, #0x2710
+	ld	a, xl
 	sbc	a, #0x00
-	ld	a, (0x93, y)
+	ld	a, xh
 	sbc	a, #0x00
 	jrc	00176$
 	jp	00128$
 00176$:
-	addw	x, #0x0001
-	ld	a, (0x94, y)
-	adc	a, #0x00
-	ld	(0x94, y), a
-	ld	a, (0x93, y)
-	adc	a, #0x00
-	ld	(0x93, y), a
+	incw	y
+	jrne	00121$
+	incw	x
 	jra	00121$
-;	src/main.c: 83: while(1);
-;	src/main.c: 84: }
-	addw	sp, #255
-	addw	sp, #138
+;	src/main.c: 118: while(1);
+;	src/main.c: 119: }
+	addw	sp, #238
 	ret
-;	src/main.c: 86: void get_next_color(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t step)
+;	src/main.c: 121: void get_next_color(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t step)
 ;	-----------------------------------------
 ;	 function get_next_color
 ;	-----------------------------------------
 _get_next_color:
 	sub	sp, #18
-;	src/main.c: 88: while (step--)
+;	src/main.c: 123: while (step--)
 	ldw	y, (0x19, sp)
 	ldw	(0x01, sp), y
 	ldw	(0x03, sp), y
@@ -741,19 +719,19 @@ _get_next_color:
 	jrne	00236$
 	jp	00133$
 00236$:
-;	src/main.c: 90: if (*r == 255 && *b == 0 && *g < 255)
+;	src/main.c: 125: if (*r == 255 && *b == 0 && *g < 255)
 	ldw	y, (0x15, sp)
 	ldw	(0x09, sp), y
 	ldw	x, y
 	ld	a, (x)
 	ld	(0x0b, sp), a
 	ldw	y, (0x17, sp)
-;	src/main.c: 92: else if ( *g == 255 && *b == 0 && *r > 0)
+;	src/main.c: 127: else if ( *g == 255 && *b == 0 && *r > 0)
 	ldw	(0x0c, sp), y
 	ldw	x, y
 	ld	a, (x)
 	ld	(0x0e, sp), a
-;	src/main.c: 90: if (*r == 255 && *b == 0 && *g < 255)
+;	src/main.c: 125: if (*r == 255 && *b == 0 && *g < 255)
 	ld	a, (0x0b, sp)
 	inc	a
 	jrne	00238$
@@ -763,10 +741,10 @@ _get_next_color:
 00238$:
 	clr	(0x0f, sp)
 00239$:
-;	src/main.c: 91: (*g) += 1;
+;	src/main.c: 126: (*g) += 1;
 	ld	a, (0x0e, sp)
 	ld	(0x10, sp), a
-;	src/main.c: 90: if (*r == 255 && *b == 0 && *g < 255)
+;	src/main.c: 125: if (*r == 255 && *b == 0 && *g < 255)
 	tnz	(0x0f, sp)
 	jreq	00126$
 	ldw	x, (0x01, sp)
@@ -775,14 +753,14 @@ _get_next_color:
 	ld	a, (0x0e, sp)
 	cp	a, #0xff
 	jrnc	00126$
-;	src/main.c: 91: (*g) += 1;
+;	src/main.c: 126: (*g) += 1;
 	ld	a, (0x10, sp)
 	inc	a
 	ldw	x, (0x0c, sp)
 	ld	(x), a
 	jra	00130$
 00126$:
-;	src/main.c: 92: else if ( *g == 255 && *b == 0 && *r > 0)
+;	src/main.c: 127: else if ( *g == 255 && *b == 0 && *r > 0)
 	ld	a, (0x0e, sp)
 	inc	a
 	jrne	00244$
@@ -792,10 +770,10 @@ _get_next_color:
 00244$:
 	clr	(0x11, sp)
 00245$:
-;	src/main.c: 93: (*r) -= 1;
+;	src/main.c: 128: (*r) -= 1;
 	ld	a, (0x0b, sp)
 	ld	yl, a
-;	src/main.c: 92: else if ( *g == 255 && *b == 0 && *r > 0)
+;	src/main.c: 127: else if ( *g == 255 && *b == 0 && *r > 0)
 	tnz	(0x11, sp)
 	jreq	00121$
 	ldw	x, (0x03, sp)
@@ -803,14 +781,14 @@ _get_next_color:
 	jrne	00121$
 	tnz	(0x0b, sp)
 	jreq	00121$
-;	src/main.c: 93: (*r) -= 1;
+;	src/main.c: 128: (*r) -= 1;
 	ld	a, yl
 	dec	a
 	ldw	x, (0x09, sp)
 	ld	(x), a
 	jra	00130$
 00121$:
-;	src/main.c: 94: else if (*r == 0 && *g == 255 && *b < 255)
+;	src/main.c: 129: else if (*r == 0 && *g == 255 && *b < 255)
 	tnz	(0x0b, sp)
 	jrne	00116$
 	tnz	(0x11, sp)
@@ -819,13 +797,13 @@ _get_next_color:
 	ld	a, (x)
 	cp	a, #0xff
 	jrnc	00116$
-;	src/main.c: 95: (*b) += 1;
+;	src/main.c: 130: (*b) += 1;
 	inc	a
 	ldw	x, (0x01, sp)
 	ld	(x), a
 	jra	00130$
 00116$:
-;	src/main.c: 96: else if (*r == 0 && *b == 255 && *g > 0)
+;	src/main.c: 131: else if (*r == 0 && *b == 255 && *g > 0)
 	tnz	(0x0b, sp)
 	jrne	00111$
 	ldw	x, (0x05, sp)
@@ -834,14 +812,14 @@ _get_next_color:
 	jrne	00111$
 	tnz	(0x0e, sp)
 	jreq	00111$
-;	src/main.c: 97: (*g) -= 1;
+;	src/main.c: 132: (*g) -= 1;
 	ld	a, (0x10, sp)
 	dec	a
 	ldw	x, (0x0c, sp)
 	ld	(x), a
 	jp	00130$
 00111$:
-;	src/main.c: 98: else if (*g == 0 && *b == 255 && *r < 255)
+;	src/main.c: 133: else if (*g == 0 && *b == 255 && *r < 255)
 	tnz	(0x0e, sp)
 	jrne	00106$
 	ldw	x, (0x07, sp)
@@ -851,14 +829,14 @@ _get_next_color:
 	ld	a, (0x0b, sp)
 	cp	a, #0xff
 	jrnc	00106$
-;	src/main.c: 99: (*r) += 1;
+;	src/main.c: 134: (*r) += 1;
 	ld	a, yl
 	inc	a
 	ldw	x, (0x09, sp)
 	ld	(x), a
 	jp	00130$
 00106$:
-;	src/main.c: 100: else if (*r == 255 && *g == 0 && *b > 0)
+;	src/main.c: 135: else if (*r == 255 && *g == 0 && *b > 0)
 	tnz	(0x0f, sp)
 	jrne	00262$
 	jp	00130$
@@ -872,38 +850,38 @@ _get_next_color:
 	jrne	00264$
 	jp	00130$
 00264$:
-;	src/main.c: 101: (*b) -= 1;
+;	src/main.c: 136: (*b) -= 1;
 	dec	a
 	ldw	x, (0x01, sp)
 	ld	(x), a
 	jp	00130$
 00133$:
-;	src/main.c: 103: }
+;	src/main.c: 138: }
 	addw	sp, #18
 	ret
-;	src/main.c: 105: void uart_init()
+;	src/main.c: 140: void uart_init()
 ;	-----------------------------------------
 ;	 function uart_init
 ;	-----------------------------------------
 _uart_init:
-;	src/main.c: 108: UART1_CR2 |= UART_CR2_TEN; // Transmitter enable
+;	src/main.c: 143: UART1_CR2 |= UART_CR2_TEN; // Transmitter enable
 	bset	21045, #3
-;	src/main.c: 110: UART1_CR3 &= ~(UART_CR3_STOP1 | UART_CR3_STOP2); // 1 stop bit
+;	src/main.c: 145: UART1_CR3 &= ~(UART_CR3_STOP1 | UART_CR3_STOP2); // 1 stop bit
 	ld	a, 0x5236
 	and	a, #0xcf
 	ld	0x5236, a
-;	src/main.c: 112: UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
+;	src/main.c: 147: UART1_BRR2 = 0x01; UART1_BRR1 = 0x34; // 0x0341 coded funky way (see page 365 and 336 of ref manual)
 	mov	0x5233+0, #0x01
 	mov	0x5232+0, #0x34
-;	src/main.c: 113: }
+;	src/main.c: 148: }
 	ret
-;	src/main.c: 116: uint16_t uart_write(const char *str) {
+;	src/main.c: 151: uint16_t uart_write(const char *str) {
 ;	-----------------------------------------
 ;	 function uart_write
 ;	-----------------------------------------
 _uart_write:
 	sub	sp, #3
-;	src/main.c: 118: for(i = 0; i < strlen(str); i++) {
+;	src/main.c: 153: for(i = 0; i < strlen(str); i++) {
 	clr	(0x03, sp)
 00106$:
 	ldw	x, (0x06, sp)
@@ -916,59 +894,59 @@ _uart_write:
 	ld	xl, a
 	cpw	x, (0x01, sp)
 	jrnc	00104$
-;	src/main.c: 119: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
+;	src/main.c: 154: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
 00101$:
 	ld	a, 0x5230
 	jrpl	00101$
-;	src/main.c: 120: UART1_DR = str[i];
+;	src/main.c: 155: UART1_DR = str[i];
 	clrw	x
 	ld	a, (0x03, sp)
 	ld	xl, a
 	addw	x, (0x06, sp)
 	ld	a, (x)
 	ld	0x5231, a
-;	src/main.c: 118: for(i = 0; i < strlen(str); i++) {
+;	src/main.c: 153: for(i = 0; i < strlen(str); i++) {
 	inc	(0x03, sp)
 	jra	00106$
 00104$:
-;	src/main.c: 122: return(i); // Bytes sent
+;	src/main.c: 157: return(i); // Bytes sent
 	ld	a, (0x03, sp)
 	clrw	x
 	ld	xl, a
-;	src/main.c: 123: }
+;	src/main.c: 158: }
 	addw	sp, #3
 	ret
-;	src/main.c: 125: void uart_write_8bits(uint8_t d)
+;	src/main.c: 160: void uart_write_8bits(uint8_t d)
 ;	-----------------------------------------
 ;	 function uart_write_8bits
 ;	-----------------------------------------
 _uart_write_8bits:
-;	src/main.c: 127: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
+;	src/main.c: 162: while(!(UART1_SR & UART_SR_TXE)); // !Transmit data register empty
 00101$:
 	ld	a, 0x5230
 	jrpl	00101$
-;	src/main.c: 128: UART1_DR = d;
+;	src/main.c: 163: UART1_DR = d;
 	ldw	x, #0x5231
 	ld	a, (0x03, sp)
 	ld	(x), a
-;	src/main.c: 129: }
+;	src/main.c: 164: }
 	ret
-;	src/main.c: 132: void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len)
+;	src/main.c: 167: void int_to_hex_str(uint32_t dec, char *hex_str, uint8_t hex_str_len)
 ;	-----------------------------------------
 ;	 function int_to_hex_str
 ;	-----------------------------------------
 _int_to_hex_str:
 	sub	sp, #3
-;	src/main.c: 135: while(hex_str_len)
+;	src/main.c: 170: while(hex_str_len)
 	ld	a, (0x0c, sp)
 	ld	(0x03, sp), a
 00101$:
 	tnz	(0x03, sp)
 	jreq	00104$
-;	src/main.c: 137: uint8_t masked_dec = (dec & mask);
+;	src/main.c: 172: uint8_t masked_dec = (dec & mask);
 	ld	a, (0x09, sp)
 	and	a, #0x0f
-;	src/main.c: 138: hex_str[hex_str_len - 1] = (masked_dec < 10) ? (masked_dec + '0') : (masked_dec + '7');
+;	src/main.c: 173: hex_str[hex_str_len - 1] = (masked_dec < 10) ? (masked_dec + '0') : (masked_dec + '7');
 	clrw	x
 	exg	a, xl
 	ld	a, (0x03, sp)
@@ -988,7 +966,7 @@ _int_to_hex_str:
 00107$:
 	ldw	x, (0x01, sp)
 	ld	(x), a
-;	src/main.c: 140: dec >>= 4;
+;	src/main.c: 175: dec >>= 4;
 	ldw	x, (0x08, sp)
 	ldw	y, (0x06, sp)
 	srlw	y
@@ -1001,14 +979,271 @@ _int_to_hex_str:
 	rrcw	x
 	ldw	(0x08, sp), x
 	ldw	(0x06, sp), y
-;	src/main.c: 141: hex_str_len--;
+;	src/main.c: 176: hex_str_len--;
 	dec	(0x03, sp)
 	jra	00101$
 00104$:
-;	src/main.c: 143: }
+;	src/main.c: 178: }
 	addw	sp, #3
 	ret
 	.area CODE
 	.area CONST
+_CIE_CORRECTION:
+	.db #0x00	; 0
+	.db #0x00	; 0
+	.db #0x00	; 0
+	.db #0x00	; 0
+	.db #0x00	; 0
+	.db #0x01	; 1
+	.db #0x01	; 1
+	.db #0x01	; 1
+	.db #0x01	; 1
+	.db #0x01	; 1
+	.db #0x01	; 1
+	.db #0x01	; 1
+	.db #0x01	; 1
+	.db #0x01	; 1
+	.db #0x02	; 2
+	.db #0x02	; 2
+	.db #0x02	; 2
+	.db #0x02	; 2
+	.db #0x02	; 2
+	.db #0x02	; 2
+	.db #0x02	; 2
+	.db #0x02	; 2
+	.db #0x02	; 2
+	.db #0x03	; 3
+	.db #0x03	; 3
+	.db #0x03	; 3
+	.db #0x03	; 3
+	.db #0x03	; 3
+	.db #0x03	; 3
+	.db #0x03	; 3
+	.db #0x03	; 3
+	.db #0x04	; 4
+	.db #0x04	; 4
+	.db #0x04	; 4
+	.db #0x04	; 4
+	.db #0x04	; 4
+	.db #0x04	; 4
+	.db #0x05	; 5
+	.db #0x05	; 5
+	.db #0x05	; 5
+	.db #0x05	; 5
+	.db #0x05	; 5
+	.db #0x06	; 6
+	.db #0x06	; 6
+	.db #0x06	; 6
+	.db #0x06	; 6
+	.db #0x06	; 6
+	.db #0x07	; 7
+	.db #0x07	; 7
+	.db #0x07	; 7
+	.db #0x07	; 7
+	.db #0x08	; 8
+	.db #0x08	; 8
+	.db #0x08	; 8
+	.db #0x08	; 8
+	.db #0x09	; 9
+	.db #0x09	; 9
+	.db #0x09	; 9
+	.db #0x0a	; 10
+	.db #0x0a	; 10
+	.db #0x0a	; 10
+	.db #0x0a	; 10
+	.db #0x0b	; 11
+	.db #0x0b	; 11
+	.db #0x0b	; 11
+	.db #0x0c	; 12
+	.db #0x0c	; 12
+	.db #0x0c	; 12
+	.db #0x0d	; 13
+	.db #0x0d	; 13
+	.db #0x0d	; 13
+	.db #0x0e	; 14
+	.db #0x0e	; 14
+	.db #0x0f	; 15
+	.db #0x0f	; 15
+	.db #0x0f	; 15
+	.db #0x10	; 16
+	.db #0x10	; 16
+	.db #0x11	; 17
+	.db #0x11	; 17
+	.db #0x11	; 17
+	.db #0x12	; 18
+	.db #0x12	; 18
+	.db #0x13	; 19
+	.db #0x13	; 19
+	.db #0x14	; 20
+	.db #0x14	; 20
+	.db #0x15	; 21
+	.db #0x15	; 21
+	.db #0x16	; 22
+	.db #0x16	; 22
+	.db #0x17	; 23
+	.db #0x17	; 23
+	.db #0x18	; 24
+	.db #0x18	; 24
+	.db #0x19	; 25
+	.db #0x19	; 25
+	.db #0x1a	; 26
+	.db #0x1a	; 26
+	.db #0x1b	; 27
+	.db #0x1c	; 28
+	.db #0x1c	; 28
+	.db #0x1d	; 29
+	.db #0x1d	; 29
+	.db #0x1e	; 30
+	.db #0x1f	; 31
+	.db #0x1f	; 31
+	.db #0x20	; 32
+	.db #0x20	; 32
+	.db #0x21	; 33
+	.db #0x22	; 34
+	.db #0x22	; 34
+	.db #0x23	; 35
+	.db #0x24	; 36
+	.db #0x25	; 37
+	.db #0x25	; 37
+	.db #0x26	; 38
+	.db #0x27	; 39
+	.db #0x27	; 39
+	.db #0x28	; 40
+	.db #0x29	; 41
+	.db #0x2a	; 42
+	.db #0x2b	; 43
+	.db #0x2b	; 43
+	.db #0x2c	; 44
+	.db #0x2d	; 45
+	.db #0x2e	; 46
+	.db #0x2f	; 47
+	.db #0x2f	; 47
+	.db #0x30	; 48	'0'
+	.db #0x31	; 49	'1'
+	.db #0x32	; 50	'2'
+	.db #0x33	; 51	'3'
+	.db #0x34	; 52	'4'
+	.db #0x35	; 53	'5'
+	.db #0x36	; 54	'6'
+	.db #0x36	; 54	'6'
+	.db #0x37	; 55	'7'
+	.db #0x38	; 56	'8'
+	.db #0x39	; 57	'9'
+	.db #0x3a	; 58
+	.db #0x3b	; 59
+	.db #0x3c	; 60
+	.db #0x3d	; 61
+	.db #0x3e	; 62
+	.db #0x3f	; 63
+	.db #0x40	; 64
+	.db #0x41	; 65	'A'
+	.db #0x42	; 66	'B'
+	.db #0x43	; 67	'C'
+	.db #0x44	; 68	'D'
+	.db #0x46	; 70	'F'
+	.db #0x47	; 71	'G'
+	.db #0x48	; 72	'H'
+	.db #0x49	; 73	'I'
+	.db #0x4a	; 74	'J'
+	.db #0x4b	; 75	'K'
+	.db #0x4c	; 76	'L'
+	.db #0x4d	; 77	'M'
+	.db #0x4f	; 79	'O'
+	.db #0x50	; 80	'P'
+	.db #0x51	; 81	'Q'
+	.db #0x52	; 82	'R'
+	.db #0x53	; 83	'S'
+	.db #0x55	; 85	'U'
+	.db #0x56	; 86	'V'
+	.db #0x57	; 87	'W'
+	.db #0x58	; 88	'X'
+	.db #0x5a	; 90	'Z'
+	.db #0x5b	; 91
+	.db #0x5c	; 92
+	.db #0x5e	; 94
+	.db #0x5f	; 95
+	.db #0x60	; 96
+	.db #0x62	; 98	'b'
+	.db #0x63	; 99	'c'
+	.db #0x64	; 100	'd'
+	.db #0x66	; 102	'f'
+	.db #0x67	; 103	'g'
+	.db #0x69	; 105	'i'
+	.db #0x6a	; 106	'j'
+	.db #0x6c	; 108	'l'
+	.db #0x6d	; 109	'm'
+	.db #0x6e	; 110	'n'
+	.db #0x70	; 112	'p'
+	.db #0x71	; 113	'q'
+	.db #0x73	; 115	's'
+	.db #0x74	; 116	't'
+	.db #0x76	; 118	'v'
+	.db #0x78	; 120	'x'
+	.db #0x79	; 121	'y'
+	.db #0x7b	; 123
+	.db #0x7c	; 124
+	.db #0x7e	; 126
+	.db #0x80	; 128
+	.db #0x81	; 129
+	.db #0x83	; 131
+	.db #0x84	; 132
+	.db #0x86	; 134
+	.db #0x88	; 136
+	.db #0x8a	; 138
+	.db #0x8b	; 139
+	.db #0x8d	; 141
+	.db #0x8f	; 143
+	.db #0x91	; 145
+	.db #0x92	; 146
+	.db #0x94	; 148
+	.db #0x96	; 150
+	.db #0x98	; 152
+	.db #0x9a	; 154
+	.db #0x9b	; 155
+	.db #0x9d	; 157
+	.db #0x9f	; 159
+	.db #0xa1	; 161
+	.db #0xa3	; 163
+	.db #0xa5	; 165
+	.db #0xa7	; 167
+	.db #0xa9	; 169
+	.db #0xab	; 171
+	.db #0xad	; 173
+	.db #0xaf	; 175
+	.db #0xb1	; 177
+	.db #0xb3	; 179
+	.db #0xb5	; 181
+	.db #0xb7	; 183
+	.db #0xb9	; 185
+	.db #0xbb	; 187
+	.db #0xbd	; 189
+	.db #0xbf	; 191
+	.db #0xc1	; 193
+	.db #0xc4	; 196
+	.db #0xc6	; 198
+	.db #0xc8	; 200
+	.db #0xca	; 202
+	.db #0xcc	; 204
+	.db #0xcf	; 207
+	.db #0xd1	; 209
+	.db #0xd3	; 211
+	.db #0xd6	; 214
+	.db #0xd8	; 216
+	.db #0xda	; 218
+	.db #0xdc	; 220
+	.db #0xdf	; 223
+	.db #0xe1	; 225
+	.db #0xe4	; 228
+	.db #0xe6	; 230
+	.db #0xe8	; 232
+	.db #0xeb	; 235
+	.db #0xed	; 237
+	.db #0xf0	; 240
+	.db #0xf2	; 242
+	.db #0xf5	; 245
+	.db #0xf7	; 247
+	.db #0xfa	; 250
+	.db #0xfc	; 252
+	.db #0xff	; 255
 	.area INITIALIZER
 	.area CABS (ABS)

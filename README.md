@@ -22,13 +22,15 @@ The stm8 is connected to a 4Mbit Adesto spi standard flash where images/animatio
 - AT25SF041 flash driver
 - WS2812 / WS2811 driver
 
+### Problems:
+- Biggest one: slip ring and brush based power transfer is not reliably working. I suck at mechanical designs.
+- WS2812 is too slow for POV.
+
 ### TO DO:
-- Complete the flash driver and make it work properly [ working here]
 - Load data to flash using UART from PC (images/ animation)
 - Read the loaded data from the flash
 - Make the circuit in KiCAD
 - Select what LED to use (WS2812? or normal LED with serial LED-driver IC?)
-- Write LED driver and make it work
 - Read from flash and drive LEDs based on that data
 - And lots of other works related to the motor selection/body design/power transfer (slip ring or wireless?) etc..
 
