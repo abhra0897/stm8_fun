@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <string.h>
-#include "stm8.h"
+#include "stm8s.h"
 #include "spi.h"
 #include "flash_driver.h"
 #include "ws2812_driver.h"

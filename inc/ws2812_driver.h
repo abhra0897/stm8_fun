@@ -1,7 +1,7 @@
 #ifndef _WS2812_DRIVER_H
 #define _WS2812_DRIVER_H
 
-#include "stm8.h"
+#include "stm8s.h"
 #include <stdint.h>
 
 /**the inline send() functions have better timing and both 1 and 0 has cycle time of 1250ns

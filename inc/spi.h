@@ -1,7 +1,7 @@
 #ifndef _SPI_H
 #define _SPI_H
 
-#include "stm8.h"
+#include "stm8s.h"
 #include <stdint.h>
 
 #define SPI_PORT                PC
